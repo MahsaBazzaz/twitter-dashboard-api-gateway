@@ -47,12 +47,10 @@ export class AppService {
     if (!username) {
       throw new NotFoundException(`user ${username} does not exist`);
     }
-    const response = await this.httpService.get(`localhost://5000/getIdByUsername/`, { data: { "username": username } }).toPromise()
+    const response = await this.httpService.get('http://127.0.0.1:5000/getIdByUsername', { data: { "username": username } }).toPromise()
       .then((res) => {
         return res.data;
       });
-    if (response.status == "ok") {
-      const t = await this.knex.table('target_users').insert([{ 'user_id': response.data }]);
-    }
+      return response;
   }
 }
