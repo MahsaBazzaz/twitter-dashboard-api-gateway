@@ -1,14 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { TweetDto } from './tweetDto';
+import { HttpServer, Injectable, NotFoundException } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
-import { TwitterService } from './twitter-microservice/twitter-microservice.service';
+import { HttpService } from '@nestjs/axios';
+
 
 @Injectable()
 export class AppService {
   constructor(@InjectModel() 
   private readonly knex: Knex,
-  private readonly twitterService: TwitterService) { }
+  private httpService: HttpService) { }
 
   getHello(): string {
     return 'Hello World!';
@@ -18,7 +18,6 @@ export class AppService {
     if (!id) {
       throw new NotFoundException(`tweet ${id} does not exist`);
     }
-    // const t = await this.knex.raw(`SELECT * FROM TWEETS WHERE TWEET_ID = ${id}`);
     const t = await this.knex.table('tweets').where('tweet_id', id);
     return t;
   }
@@ -48,10 +47,12 @@ export class AppService {
     if (!username) {
       throw new NotFoundException(`user ${username} does not exist`);
     }
-    const ifExist = await this.twitterService.getTwitterUsername(username);
-    console.log(ifExist)
-    // if (ifExist) {
-    //   const t = await this.knex.table('target_users').insert([{'user_id': 1}]);
-    // }
+    const response = await this.httpService.get(`localhost://5000/ifUserExists/${username}/`).toPromise()
+    .then((res) => {
+      return res.data;
+    });
+    if (response.status == "ok") {
+      const t = await this.knex.table('target_users').insert([{'user_id': response.data}]);
+    }
   }
 }
