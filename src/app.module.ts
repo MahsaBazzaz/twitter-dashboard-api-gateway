@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { KnexModule } from 'nest-knexjs';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
-import { TwitterService } from './twitter.service';
 
 @Module({
   imports: [
@@ -26,6 +25,6 @@ import { TwitterService } from './twitter.service';
     HttpModule
   ],
   controllers: [AppController],
-  providers: [AppService,TwitterService],
+  providers: [AppService],
 })
 export class AppModule { }
