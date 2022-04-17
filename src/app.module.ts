@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { KnexModule } from 'nest-knexjs';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
+require('dotenv').config({ path: '../.env' });
 
 @Module({
   imports: [
@@ -14,14 +15,17 @@ import { HttpModule } from '@nestjs/axios';
         useNullAsDefault: true,
         connection: {
           host: '127.0.0.1',
-          port: 5444,
-          user: 'enterprisedb',
-          password: '20170111',
-          database: 'twitter',
+          port: 5432,
+          user: 'postgres',
+          password: 'pa$$w0rd',
+          database: 'twitter'
         },
       },
     }),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      envFilePath: '../.env',
+      isGlobal: true
+    }),
     HttpModule
   ],
   controllers: [AppController],
