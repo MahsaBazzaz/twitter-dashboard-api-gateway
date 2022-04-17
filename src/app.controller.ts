@@ -32,8 +32,8 @@ export class AppController {
     return this.appService.searchTweetByKeyword(keyword);
   }
 
-  // @Get("addUser")
-  // addUser(@Body('username') username : string): any {
-  //   return this.appService.addUser(username);
-  // }
+  @Get("addUser")
+  addUser(@Body('username') username : string): any {
+    return this.appService.addUser(username);
+  }
 }

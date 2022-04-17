@@ -8,7 +8,6 @@ async function bootstrap() {
   const microservice = app.connectMicroservice({
     transport: Transport.NATS,
   });
-  await app.startAllMicroservicesAsync();
   app.enableCors();
   await app.listen(3000);
 

@@ -29,6 +29,7 @@
     "@nestjs/microservices": "^8.4.4",
     "@nestjs/platform-express": "^8.0.0",
     "knex": "^1.0.7",
+    "nats": "^2.6.1",
     "nest-knexjs": "^0.0.9",
     "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",

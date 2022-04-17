@@ -2,10 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { TweetDto } from './tweetDto';
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
+import { TwitterService } from './twitter-microservice/twitter-microservice.service';
 
 @Injectable()
 export class AppService {
-  constructor(@InjectModel() private readonly knex: Knex) { }
+  constructor(@InjectModel() 
+  private readonly knex: Knex,
+  private readonly twitterService: TwitterService) { }
 
   getHello(): string {
     return 'Hello World!';
@@ -41,14 +44,14 @@ export class AppService {
     return t;
   }
 
-  // async addUser(username: string) {
-  //   if (!username) {
-  //     throw new NotFoundException(`user ${username} does not exist`);
-  //   }
-  //   const ifExist = await this.twitterService.ifUserExists(username);
-  //   console.log(ifExist)
-  //   if (ifExist) {
-  //     // const t = await this.knex.table('target_users').insert([{'user_id': 1}]);
-  //   }
-  // }
+  async addUser(username: string) {
+    if (!username) {
+      throw new NotFoundException(`user ${username} does not exist`);
+    }
+    const ifExist = await this.twitterService.getTwitterUsername(username);
+    console.log(ifExist)
+    // if (ifExist) {
+    //   const t = await this.knex.table('target_users').insert([{'user_id': 1}]);
+    // }
+  }
 }

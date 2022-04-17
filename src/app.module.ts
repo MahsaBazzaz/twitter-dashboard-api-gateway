@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { KnexModule } from 'nest-knexjs';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
+import { TwitterModule } from './twitter-microservice/twitter-microservice.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { HttpModule } from '@nestjs/axios';
       },
     }),
     ConfigModule.forRoot(),
-    HttpModule
+    HttpModule,
+    TwitterModule
   ],
   controllers: [AppController],
   providers: [AppService],
