@@ -26,6 +26,7 @@
     "@nestjs/config": "^2.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/mapped-types": "^1.0.1",
+    "@nestjs/microservices": "^8.4.4",
     "@nestjs/platform-express": "^8.0.0",
     "knex": "^1.0.7",
     "nest-knexjs": "^0.0.9",
