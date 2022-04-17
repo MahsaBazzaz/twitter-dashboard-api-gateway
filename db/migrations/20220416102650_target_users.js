@@ -2,12 +2,12 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
- exports.up = function(knex) {
+exports.up = function(knex) {
     return knex.schema
-    .createTable('target_users', function (table) {
-      table.increments('id');
-      table.integer('user_id').notNullable();
-    })
+        .createTable('target_users', function(table) {
+            table.increments('id');
+            table.integer('user_id').notNullable().unique();
+        })
 };
 
 /**

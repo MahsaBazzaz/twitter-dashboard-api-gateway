@@ -1,10 +1,10 @@
-import { Body, Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { TweetDto } from './tweetDto';
+import { keyword, ResponseSchema, Tweet, User } from './dtos';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService) { }
 
   @Get()
   getHello(): string {
@@ -12,53 +12,52 @@ export class AppController {
   }
 
   @Get("/getTweetById")
-  getTweet(@Body('id') id : string): any {
-    console.log(id);
+  getTweet(@Body('id') id: string): Promise<ResponseSchema<Tweet>> {
     return this.appService.getTweetById(id);
   }
 
   @Get("getTweetsByUsername")
-  getTweetsByUsername(@Body('username') username : string): any {
+  getTweetsByUsername(@Body('username') username: string): Promise<ResponseSchema<Tweet[]>> {
     return this.appService.getTweetsByUsername(username);
   }
 
   @Get("getAllTweets")
-  getAllTweets(): any {
+  getAllTweets(): Promise<ResponseSchema<Tweet[]>> {
     return this.appService.getAllTweets();
   }
 
   @Get("serachTweetByKeyword")
-  searchTweetByKeyword(@Body('keyword') keyword : string): any {
+  searchTweetByKeyword(@Body('keyword') keyword: string): Promise<ResponseSchema<Tweet[]>> {
     return this.appService.searchTweetByKeyword(keyword);
   }
 
   @Get("getAllUsers")
-  getAllUsers(): any {
+  getAllUsers(): Promise<ResponseSchema<User[]>> {
     return this.appService.getAllUsers();
   }
 
   @Get("addUser")
-  addUser(@Body('username') username : string): any {
+  addUser(@Body('username') username: string): Promise<ResponseSchema<User>> {
     return this.appService.addUser(username);
   }
 
   @Get("removeUser")
-  removeUser(@Body('username') username : string): any {
+  removeUser(@Body('username') username: string): Promise<ResponseSchema<object>> {
     return this.appService.removeUser(username);
   }
 
   @Get("getAllKeywords")
-  getAllKeywords(): any {
+  getAllKeywords(): Promise<ResponseSchema<keyword[]>> {
     return this.appService.getAllKeywords();
   }
 
   @Get("addKeyword")
-  addKeyword(@Body('keyword') keyword : string): any {
+  addKeyword(@Body('keyword') keyword: string): Promise<ResponseSchema<keyword>> {
     return this.appService.addKeyword(keyword);
   }
 
   @Get("removeKeyword")
-  removeKeyword(@Body('keyword') keyword : string): any {
+  removeKeyword(@Body('keyword') keyword: string): any {
     return this.appService.removeKeyword(keyword);
   }
 
@@ -77,8 +76,4 @@ export class AppController {
     return this.appService.sortTweetsByRetweets();
   }
 
-  @Get("searchByKeyword")
-  searchByKeyword(@Body('keyword') keyword : string): any {
-    return this.appService.searchByKeyword(keyword);
-  }
 }

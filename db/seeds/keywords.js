@@ -6,8 +6,8 @@ exports.seed = async function(knex) {
     // Deletes ALL existing entries
     await knex('keywords').del()
     await knex('keywords').insert([
-        { id: 1, word: 'malware' },
-        { id: 2, word: 'security' },
-        { id: 3, word: 'sploit' }
+        { word: 'malware' },
+        { word: 'security' },
+        { word: 'sploit' }
     ]);
 };

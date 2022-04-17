@@ -4,10 +4,10 @@
  */
 exports.up = function(knex) {
     return knex.schema
-    .createTable('keywords', function (table) {
-      table.increments('id');
-      table.string('word', 255).notNullable();
-    })
+        .createTable('keywords', function(table) {
+            table.increments('id');
+            table.string('word', 255).notNullable().unique();
+        })
 };
 
 /**
