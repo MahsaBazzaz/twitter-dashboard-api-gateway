@@ -47,7 +47,7 @@ export class AppService {
     if (!username) {
       throw new NotFoundException(`user ${username} does not exist`);
     }
-    const response = await this.httpService.get(`localhost://5000/ifUserExists/${username}/`).toPromise()
+    const response = await this.httpService.get(`localhost://5000/getIdByUsername/${username}/`).toPromise()
     .then((res) => {
       return res.data;
     });
