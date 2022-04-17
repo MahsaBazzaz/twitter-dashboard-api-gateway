@@ -43,6 +43,10 @@ export class AppService {
     return t;
   }
 
+  async getAllUsers() {
+    // TODO
+  }
+
   async addUser(username: string) {
     if (!username) {
       throw new NotFoundException(`user ${username} does not exist`);
@@ -51,6 +55,39 @@ export class AppService {
       .then((res) => {
         return res.data;
       });
-      return response;
+    return response;
+  }
+
+  async removeUser(username: string) {
+    // TODO
+  }
+
+  async getAllKeywords() {
+    // TODO
+  }
+
+  async addKeyword(keyword: string) {
+    // TODO
+  }
+
+  async removeKeyword(keyword: string) {
+    // TODO
+  }
+
+  async sortTweetsByDate() {
+    // TODO
+  }
+
+  async sortTweetsByLikes() {
+    // TODO
+  }
+
+  async sortTweetsByRetweets() {
+    // TODO
+  }
+
+  async searchByKeyword(keyword: string) {
+    // TODO
   }
 }
+
