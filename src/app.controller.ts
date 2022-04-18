@@ -42,7 +42,7 @@ export class AppController {
   }
 
   @Get("removeUser")
-  removeUser(@Body('username') username: string): Promise<ResponseSchema<object>> {
+  removeUser(@Body('username') username: string): Promise<ResponseSchema<any>> {
     return this.appService.removeUser(username);
   }
 
@@ -57,22 +57,22 @@ export class AppController {
   }
 
   @Get("removeKeyword")
-  removeKeyword(@Body('keyword') keyword: string): any {
+  removeKeyword(@Body('keyword') keyword: string): Promise<ResponseSchema<any>> {
     return this.appService.removeKeyword(keyword);
   }
 
   @Get("sortTweetsByDate")
-  sortTweetsByDate(): any {
+  sortTweetsByDate(): Promise<ResponseSchema<Tweet[]>> {
     return this.appService.sortTweetsByDate();
   }
 
   @Get("sortTweetsByLikes")
-  sortTweetsByLikes(): any {
+  sortTweetsByLikes(): Promise<ResponseSchema<Tweet[]>> {
     return this.appService.sortTweetsByLikes();
   }
 
   @Get("sortTweetsByRetweets")
-  sortTweetsByRetweets(): any {
+  sortTweetsByRetweets(): Promise<ResponseSchema<Tweet[]>> {
     return this.appService.sortTweetsByRetweets();
   }
 

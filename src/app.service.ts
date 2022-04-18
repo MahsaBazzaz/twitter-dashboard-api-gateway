@@ -64,7 +64,6 @@ export class AppService {
   }
 
   async getAllUsers(): Promise<ResponseSchema<User[]>> {
-    // TODO: make data in python code 
     // TODO: test
     let completeUserData: User[];
     const users = await this.knex.table('target_users');
@@ -82,7 +81,6 @@ export class AppService {
   }
 
   async addUser(username: string): Promise<ResponseSchema<User>> {
-    // TODO: make status in python code true/false and with message
     // TODO: test
     const response = await this.httpService.get('http://127.0.0.1:5000/addUser', { data: { "username": username } }).toPromise()
       .then((res) => {
@@ -92,14 +90,14 @@ export class AppService {
     else return { status: false, data: null }
   }
 
-  async removeUser(username: string): Promise<ResponseSchema<object>> {
+  async removeUser(username: string): Promise<ResponseSchema<any>> {
     // TODO: test
     const response = await this.httpService.get('http://127.0.0.1:5000/removeUser', { data: { "username": username } }).toPromise()
       .then((res) => {
         return res.data;
       });
-    if (response.status) return { status: true, data: null }
-    else return { status: false, data: null }
+    if (response.status) return { status: true, data: response.data }
+    else return { status: false, data: response.data }
   }
 
   async getAllKeywords(): Promise<ResponseSchema<keyword[]>> {
@@ -111,48 +109,47 @@ export class AppService {
   }
 
   async addKeyword(keyword: string): Promise<ResponseSchema<keyword>> {
-    let response: ResponseSchema<keyword>;
-    await this.knex.insert({ word: keyword }, ['id']).into('keywords')
-      .then(function (resp) {
-        response = {
-          status: true,
-          data: {
-            id: resp[0],
-            word: keyword
-          }
-        }
-      })
-      .catch(function (err) {
-        response = {
-          status: false,
-          data: null
-        }
+    //TODO: test
+    const response = await this.httpService.get('http://127.0.0.1:5000/addKeyword', { data: { "keyword": keyword } }).toPromise()
+      .then((res) => {
+        return res.data;
       });
-    return response;
+    if (response.status) return { status: true, data: { id: response.data.id, word: keyword } }
+    else return { status: false, data: null }
   }
 
-  async removeKeyword(keyword: string) {
-    // TODO: return type
-    const t = await this.knex.table('keywords').where([{ word: keyword }]).del();
-    return t;
+  async removeKeyword(keyword: string): Promise<ResponseSchema<any>> {
+    // TODO: test
+    const response = await this.httpService.get('http://127.0.0.1:5000/removeKeyword', { data: { "keyword": keyword } }).toPromise()
+      .then((res) => {
+        return res.data;
+      });
+    if (response.status) return { status: true, data: response.data }
+    else return { status: false, data: response.data }
   }
 
-  async sortTweetsByDate() {
-    // TODO: return type
-    const t = await this.knex.table('tweets').orderBy('created_at', 'desc');
-    return t;
+  async sortTweetsByDate(): Promise<ResponseSchema<Tweet[]>> {
+    const tweets = await this.knex.table('tweets').orderBy('created_at', 'desc');
+    return {
+      status: true,
+      data: tweets
+    }
   }
 
-  async sortTweetsByLikes() {
-    // TODO: return type
-    const t = await this.knex.table('tweets').orderBy('likes', 'desc');
-    return t;
+  async sortTweetsByLikes(): Promise<ResponseSchema<Tweet[]>> {
+    const tweets = await this.knex.table('tweets').orderBy('likes', 'desc');
+    return {
+      status: true,
+      data: tweets
+    }
   }
 
-  async sortTweetsByRetweets() {
-    // TODO: return type
-    const t = await this.knex.table('retweets').orderBy('likes', 'desc');
-    return t;
+  async sortTweetsByRetweets(): Promise<ResponseSchema<Tweet[]>> {
+    const tweets = await this.knex.table('tweets').orderBy('retweets', 'desc');
+    return {
+      status: true,
+      data: tweets
+    }
   }
 
 }
