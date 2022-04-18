@@ -71,34 +71,37 @@ export class AppService {
   }
 
   async getAllUsers(): Promise<ResponseSchema<User[]>> {
-    // TODO: test
-    let completeUserData: User[];
+    let completeUserData = new Array<User>();
     const users = await this.knex.table('target_users');
-    users.forEach(async (element) => {
-      const response = await this.httpService.get('http://127.0.0.1:5000/getUsernameById', { data: { "id": element.user_id } }).toPromise()
-        .then((res) => {
-          return res.data;
-        });
-      if (response.status) completeUserData.push({ id: element.id, user_id: element.user_id, user_name: response.data });
-    });
+    for (const element of users) {
+      const response = await this.getUsernameById(element.user_id);
+      if (response.status)
+        completeUserData.push({ id: element.id, user_id: element.user_id, user_name: response.data });
+    }
     return {
       status: true,
       data: completeUserData
     }
   }
 
+  async getUsernameById(user_id: string): Promise<any> {
+    const response = await this.httpService.get('http://127.0.0.1:5000/getUsernameById', { data: { "user_id": user_id } }).toPromise()
+      .then((res) => {
+        return res.data;
+      });
+    return response;
+  }
+
   async addUser(username: string): Promise<ResponseSchema<User>> {
-    // TODO: test
     const response = await this.httpService.get('http://127.0.0.1:5000/addUser', { data: { "username": username } }).toPromise()
       .then((res) => {
         return res.data;
       });
-    if (response.status) return { status: true, data: { id: response.data.id, user_id: response.data.user_id, user_name: username } }
-    else return { status: false, data: null }
+    if (response.status) return { status: true, data: response.data }
+    else return { status: false, data: response.data }
   }
 
   async removeUser(username: string): Promise<ResponseSchema<any>> {
-    // TODO: test
     const response = await this.httpService.get('http://127.0.0.1:5000/removeUser', { data: { "username": username } }).toPromise()
       .then((res) => {
         return res.data;
@@ -116,17 +119,15 @@ export class AppService {
   }
 
   async addKeyword(keyword: string): Promise<ResponseSchema<keyword>> {
-    //TODO: test
     const response = await this.httpService.get('http://127.0.0.1:5000/addKeyword', { data: { "keyword": keyword } }).toPromise()
       .then((res) => {
         return res.data;
       });
     if (response.status) return { status: true, data: { id: response.data.id, word: keyword } }
-    else return { status: false, data: null }
+    else return { status: false, data: response.data }
   }
 
   async removeKeyword(keyword: string): Promise<ResponseSchema<any>> {
-    // TODO: test
     const response = await this.httpService.get('http://127.0.0.1:5000/removeKeyword', { data: { "keyword": keyword } }).toPromise()
       .then((res) => {
         return res.data;

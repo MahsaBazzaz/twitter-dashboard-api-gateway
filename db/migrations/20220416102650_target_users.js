@@ -6,7 +6,7 @@ exports.up = function(knex) {
     return knex.schema
         .createTable('target_users', function(table) {
             table.increments('id');
-            table.integer('user_id').notNullable().unique();
+            table.bigint('user_id').notNullable().unique();
         })
 };
 
