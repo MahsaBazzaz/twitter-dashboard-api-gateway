@@ -3,6 +3,7 @@ import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import { HttpService } from '@nestjs/axios';
 import { keyword, ResponseSchema, Tweet, User } from './dtos';
+import { Cron } from '@nestjs/schedule';
 
 
 @Injectable()
@@ -14,6 +15,12 @@ export class AppService {
   getHello(): string {
     return 'Hello World!';
   }
+
+  // @Cron('45 * * * * *')
+  // async handleCron() {
+  //   const tweets = await this.getAllTweets();
+  //   console.log(tweets);
+  // }
 
   async getTweetById(id: string): Promise<ResponseSchema<Tweet>> {
     const tweets = await this.knex.table('tweets').where('tweet_id', id);

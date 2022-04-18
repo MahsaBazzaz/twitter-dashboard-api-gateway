@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { KnexModule } from 'nest-knexjs';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
+import { ScheduleModule } from '@nestjs/schedule';
 require('dotenv').config({ path: '../.env' });
 
 @Module({
@@ -26,7 +27,8 @@ require('dotenv').config({ path: '../.env' });
       envFilePath: '../.env',
       isGlobal: true
     }),
-    HttpModule
+    HttpModule,
+    ScheduleModule.forRoot()
   ],
   controllers: [AppController],
   providers: [AppService],
