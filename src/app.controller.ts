@@ -38,12 +38,12 @@ export class AppController {
     return this.appService.getAllUsers();
   }
 
-  @Get("addUser")
+  @Post("addUser")
   addUser(@Body('username') username: string): Promise<ResponseSchema<User>> {
     return this.appService.addUser(username);
   }
 
-  @Get("removeUser")
+  @Post("removeUser")
   removeUser(@Body('username') username: string): Promise<ResponseSchema<any>> {
     return this.appService.removeUser(username);
   }
