@@ -110,6 +110,14 @@ export class AppService {
     else return { status: false, data: response.data }
   }
 
+  async searchUser(username: string): Promise<ResponseSchema<Tweet[]>> {
+    const tweets = await this.knex.table('target_users').whereLike('user_id', `%${username}%`);
+    return {
+      status: true,
+      data: tweets
+    }
+  }
+
   async getAllKeywords(): Promise<ResponseSchema<keyword[]>> {
     const keywords = await this.knex.table('keywords');
     return {
@@ -134,6 +142,14 @@ export class AppService {
       });
     if (response.status) return { status: true, data: response.data }
     else return { status: false, data: response.data }
+  }
+
+  async searchKeyword(keyword: string): Promise<ResponseSchema<Tweet[]>> {
+    const tweets = await this.knex.table('keywords').whereLike('word', `%${keyword}%`);
+    return {
+      status: true,
+      data: tweets
+    }
   }
 
   async sortTweetsByDate(): Promise<ResponseSchema<Tweet[]>> {
