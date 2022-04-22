@@ -4,6 +4,7 @@ import { InjectModel } from 'nest-knexjs';
 import { HttpService } from '@nestjs/axios';
 import { keyword, ResponseSchema, Tweet, User } from './dtos';
 import { Cron } from '@nestjs/schedule';
+import { stringify } from 'querystring';
 
 
 @Injectable()
@@ -71,16 +72,10 @@ export class AppService {
   }
 
   async getAllUsers(): Promise<ResponseSchema<User[]>> {
-    let completeUserData = new Array<User>();
     const users = await this.knex.table('target_users');
-    for (const element of users) {
-      const response = await this.getUsernameById(element.user_id);
-      if (response.status)
-        completeUserData.push({ id: element.id, user_id: element.user_id, user_name: response.data });
-    }
     return {
       status: true,
-      data: completeUserData
+      data: users
     }
   }
 
@@ -95,6 +90,7 @@ export class AppService {
   async addUser(username: string): Promise<ResponseSchema<User>> {
     const response = await this.httpService.get('http://127.0.0.1:5000/addUser', { data: { "username": username } }).toPromise()
       .then((res) => {
+        console.log(res)
         return res.data;
       });
     if (response.status) return { status: true, data: response.data }
@@ -111,7 +107,7 @@ export class AppService {
   }
 
   async searchUser(username: string): Promise<ResponseSchema<Tweet[]>> {
-    const tweets = await this.knex.table('target_users').whereLike('user_id', `%${username}%`);
+    const tweets = await this.knex.table('target_users').whereLike('username', `%${username}%`);
     return {
       status: true,
       data: tweets
@@ -127,6 +123,15 @@ export class AppService {
   }
 
   async addKeyword(keyword: string): Promise<ResponseSchema<keyword>> {
+    // let res: ResponseSchema<any>;
+    // await this.knex.table('keywords').insert()
+    //   .then(function (resp) {
+    //     res.status = true;
+    //   })
+    //   .catch(function (err) {
+    //     res.status = false;
+    //   });
+    // return res;
     const response = await this.httpService.get('http://127.0.0.1:5000/addKeyword', { data: { "keyword": keyword } }).toPromise()
       .then((res) => {
         return res.data;
@@ -136,6 +141,17 @@ export class AppService {
   }
 
   async removeKeyword(keyword: string): Promise<ResponseSchema<any>> {
+    // let res: ResponseSchema<any>;
+    // await this.knex('keywords')
+    //   .where('word', keyword)
+    //   .del()
+    //   .then(function (resp) {
+    //     res.status = true;
+    //   })
+    //   .catch(function (err) {
+    //     res.status = false;
+    //   });
+    // return res;
     const response = await this.httpService.get('http://127.0.0.1:5000/removeKeyword', { data: { "keyword": keyword } }).toPromise()
       .then((res) => {
         return res.data;
@@ -152,24 +168,30 @@ export class AppService {
     }
   }
 
-  async sortTweetsByDate(): Promise<ResponseSchema<Tweet[]>> {
-    const tweets = await this.knex.table('tweets').orderBy('created_at', 'desc');
+  async sortTweetsByDate(order: boolean): Promise<ResponseSchema<Tweet[]>> {
+    let by: string;
+    order ? by = 'desc' : 'asc';
+    const tweets = await this.knex.table('tweets').orderBy('created_at', by);
     return {
       status: true,
       data: tweets
     }
   }
 
-  async sortTweetsByLikes(): Promise<ResponseSchema<Tweet[]>> {
-    const tweets = await this.knex.table('tweets').orderBy('likes', 'desc');
+  async sortTweetsByLikes(order: boolean): Promise<ResponseSchema<Tweet[]>> {
+    let by: string;
+    order ? by = 'desc' : 'asc';
+    const tweets = await this.knex.table('tweets').orderBy('likes', by);
     return {
       status: true,
       data: tweets
     }
   }
 
-  async sortTweetsByRetweets(): Promise<ResponseSchema<Tweet[]>> {
-    const tweets = await this.knex.table('tweets').orderBy('retweets', 'desc');
+  async sortTweetsByRetweets(order: boolean): Promise<ResponseSchema<Tweet[]>> {
+    let by: string;
+    order ? by = 'desc' : 'asc';
+    const tweets = await this.knex.table('tweets').orderBy('retweets', by);
     return {
       status: true,
       data: tweets

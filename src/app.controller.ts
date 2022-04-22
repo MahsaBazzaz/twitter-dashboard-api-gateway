@@ -75,19 +75,19 @@ export class AppController {
     return this.appService.searchKeyword(keyword);
   }
 
-  @Get("sortTweetsByDate")
-  sortTweetsByDate(): Promise<ResponseSchema<Tweet[]>> {
-    return this.appService.sortTweetsByDate();
+  @Post("sortTweetsByDate")
+  sortTweetsByDate(@Body('order') order: boolean): Promise<ResponseSchema<Tweet[]>> {
+    return this.appService.sortTweetsByDate(order);
   }
 
-  @Get("sortTweetsByLikes")
-  sortTweetsByLikes(): Promise<ResponseSchema<Tweet[]>> {
-    return this.appService.sortTweetsByLikes();
+  @Post("sortTweetsByLikes")
+  sortTweetsByLikes(@Body('order') order: boolean): Promise<ResponseSchema<Tweet[]>> {
+    return this.appService.sortTweetsByLikes(order);
   }
 
-  @Get("sortTweetsByRetweets")
-  sortTweetsByRetweets(): Promise<ResponseSchema<Tweet[]>> {
-    return this.appService.sortTweetsByRetweets();
+  @Post("sortTweetsByRetweets")
+  sortTweetsByRetweets(@Body('order') order: boolean): Promise<ResponseSchema<Tweet[]>> {
+    return this.appService.sortTweetsByRetweets(order);
   }
 
 }
