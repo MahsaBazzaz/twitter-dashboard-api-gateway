@@ -14,10 +14,15 @@ export interface Tweet {
     retweets: number
 }
 
+export interface TweetWithImage extends Tweet{
+    image_url : string
+}
+
 export interface User {
     id: number,
     user_id: bigint,
-    user_name: string
+    username: string,
+    image_url : string
 }
 
 export interface keyword {

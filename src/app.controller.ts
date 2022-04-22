@@ -94,7 +94,7 @@ export class AppController {
   }
 
   @Get("getTopUsers")
-  getTopUsers(): Promise<ResponseSchema<{ count: number; username: String; }[]>> {
+  getTopUsers(): Promise<ResponseSchema<{ count: number; username: string; }[]>> {
     let from = new Date();
     var to = new Date();
     from.setHours(to.getHours() - 1);
@@ -106,6 +106,11 @@ export class AppController {
   @Get("getTopTweets")
   getTopTweets(): Promise<ResponseSchema<Tweet[]>> {
     return this.appService.getTopTweets();
+  }
+
+  @Get("getTopKeywords")
+  getTopKeywords(): Promise<ResponseSchema<{ word: string, count: number }[]>> {
+    return this.appService.getTopKeywords();
   }
 
   @Get("getTweetsTimeSeries")

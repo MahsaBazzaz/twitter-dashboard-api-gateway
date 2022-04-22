@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import { HttpService } from '@nestjs/axios';
-import { keyword, ResponseSchema, Token, Tweet, User } from './dtos';
+import { keyword, ResponseSchema, Token, Tweet, TweetWithImage, User } from './dtos';
 import { Cron } from '@nestjs/schedule';
 import { stringify } from 'querystring';
 
@@ -55,11 +55,26 @@ export class AppService {
     }
   }
 
-  async getAllTweets(): Promise<ResponseSchema<Tweet[]>> {
+  async getAllTweets(): Promise<ResponseSchema<TweetWithImage[]>> {
+    let res: TweetWithImage[] = [];
     const tweets = await this.knex.table('tweets');
+    for (const tweet of tweets) {
+      const users = await this.knex.table('target_users').where('username', tweet.username);
+      res.push({
+        id: tweet.id,
+        tweet_id: tweet.tweet_id,
+        username: tweet.username,
+        user_id: tweet.user_id,
+        text: tweet.text,
+        likes: tweet.likes,
+        retweets: tweet.retweets,
+        created_at: tweet.created_at,
+        image_url: users[0]?.image_url
+      });
+    }
     return {
       status: true,
-      data: tweets
+      data: res
     }
   }
 
@@ -198,7 +213,7 @@ export class AppService {
     }
   }
 
-  async getTopUsers(from, to): Promise<ResponseSchema<{ count: number; username: String }[]>> {
+  async getTopUsers(from, to): Promise<ResponseSchema<{ count: number; username: string }[]>> {
     console.log("request received");
     const data = await this.knex.raw(`SELECT COUNT(*), username FROM tweets GROUP BY username`);
     return {
@@ -214,6 +229,24 @@ export class AppService {
       status: true,
       data: tweets
     }
+  }
+
+  async getTopKeywords(): Promise<ResponseSchema<any>> {
+    console.log("request received");
+    let freqs: { word: string, count: number }[] = [];
+    let response: { word: string, count: number }[] = [];
+    let keywords: keyword[] = await this.knex.table('keywords');
+
+    for (const keyword of keywords) {
+      // let data = await this.knex.raw(`SELECT COUNT(*) FROM tweets WHERE text LIKE ${keyword.word}`);
+      const data: number = await this.knex.table('tweets').whereLike('text', `%${keyword.word}%`).count();
+      freqs.push({ word: keyword.word, count: data });
+    }
+    freqs.sort(function (a, b) { return a.count - b.count })
+    freqs.forEach(elem => {
+      response.push({ "word": elem.word, "count": elem.count })
+    })
+    return { status: true, data: response };
   }
 
   async getTweetsTimeSeries(): Promise<ResponseSchema<{ count: number, hhour: number }[]>> {
