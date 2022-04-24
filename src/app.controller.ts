@@ -23,7 +23,7 @@ export class AppController {
   }
 
   @Get("/getTweet")
-  getTweet(@Body('id') id: string): Promise<ResponseSchema<Tweet>> {
+  getTweet(@Body('id') id: string): Promise<ResponseSchema<any>> {
     return this.twitterService.tweet(id);
   }
 

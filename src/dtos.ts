@@ -27,6 +27,31 @@ export interface UserByUsername {
     }
 }
 
+export interface TWeetById {
+    id: string,
+    text: string,
+    created_at?: string,
+    author_id?: string,
+    conversation_id?: string,
+    in_reply_to_user_id?: string,
+    referenced_tweets?:
+    {
+        type: 'retweeted' | 'quoted' | 'replied_to',
+        id: string
+    }[]
+    ,
+    public_metrics?: {
+        retweet_count: number,
+        reply_count: number,
+        like_count: number,
+        quote_count: number
+    },
+    possibly_sensitive?: boolean,
+    lang?: string,
+    reply_settings?: 'everyone' | 'mentionedUsers' | 'following'
+    source?: string,
+}
+
 export interface Tweet {
     id: number,
     text: string,
