@@ -1,6 +1,30 @@
 export interface ResponseSchema<T> {
-    status: boolean,
-    data: T
+    err?: {
+        code?: string;
+        message: string
+    },
+    ok?: {
+        data: T
+    }
+}
+
+export interface UserByUsername {
+    description?: string,
+    username: string,
+    verified?: boolean,
+    profile_image_url?: string,
+    name: string,
+    location?: string,
+    url?: string,
+    id: string,
+    protected?: boolean,
+    created_at?: string,
+    public_metrics?: {
+        followers_count?: number;
+        following_count?: number;
+        tweet_count?: number;
+        listed_count?: number;
+    }
 }
 
 export interface Tweet {
@@ -36,8 +60,8 @@ export interface Token {
     count: number
 }
 
-export interface TopUser { 
+export interface TopUser {
     count: number,
     username: string,
-    image_url : string 
+    image_url: string
 }

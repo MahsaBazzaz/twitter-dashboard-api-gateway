@@ -22,8 +22,9 @@ export class ReportService {
       res.push({ username: d.username, count: d.count, image_url: user_image[0].image_url });
     }
     return {
-      status: true,
-      data: res
+      ok: {
+        data: res
+      }
     }
   }
 
@@ -45,8 +46,9 @@ export class ReportService {
       });
     }
     return {
-      status: true,
-      data: res
+      ok: {
+        data: res
+      }
     }
   }
 
@@ -65,15 +67,16 @@ export class ReportService {
     freqs.forEach(elem => {
       response.push({ "word": elem.word, "count": elem.count })
     })
-    return { status: true, data: response.slice(0, 3) };
+    return { ok: { data: response.slice(0, 3) } };
   }
 
   async getTweetsTimeSeries(): Promise<ResponseSchema<{ count: number, hhour: number }[]>> {
     console.log("request received");
     const data = await this.knex.raw("SELECT COUNT(*), extract(hour from created_at) as hhour FROM tweets WHERE created_at >= current_date at time zone 'UTC' - interval '7 days' GROUP BY hhour ORDER BY hhour");
     return {
-      status: true,
-      data: data.rows
+      ok: {
+        data: data.rows
+      }
     }
   }
 
@@ -81,8 +84,9 @@ export class ReportService {
     console.log("request received");
     const tokens = await this.knex.table('tokens').orderBy('count', 'desc').limit(50);
     return {
-      status: true,
-      data: tokens
+      ok: {
+        data: tokens
+      }
     }
   }
 }
