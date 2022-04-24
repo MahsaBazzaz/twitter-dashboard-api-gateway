@@ -125,15 +125,4 @@ export class AppController {
   getMostFrequestWords(): Promise<ResponseSchema<Token[]>> {
     return this.reportService.getMostFrequestWords();
   }
-
-  // @Get("getHeros")
-  // getHeros(): Promise<ResponseSchema<any>> {
-  //   let t: ResponseSchema<any> = { status: true, data: [{ name: "mahsa1", id: 1 }, { name: "mahsa2", id: 2 }, { name: "mahsa3", id: 3 }] }
-  //   return new Promise((resolve, reject) => {
-  //     setTimeout(() => {
-  //       resolve(t);
-  //     }, 300);
-  //   });
-  // }
-
 }
