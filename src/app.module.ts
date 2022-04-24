@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ReportService } from './report.service';
+import { TwitterService } from './twitter.service';
 require('dotenv').config({ path: '../.env' });
 
 @Module({
@@ -32,6 +33,6 @@ require('dotenv').config({ path: '../.env' });
     ScheduleModule.forRoot()
   ],
   controllers: [AppController],
-  providers: [AppService,ReportService],
+  providers: [AppService,ReportService,TwitterService],
 })
 export class AppModule { }
