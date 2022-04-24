@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import { HttpService } from '@nestjs/axios';
-import { keyword, ResponseSchema, Token, Tweet, TweetWithImage, User } from './dtos';
+import { keyword, ResponseSchema, Token, TopUser, Tweet, TweetWithImage, User } from './dtos';
 import { Cron } from '@nestjs/schedule';
 import { stringify } from 'querystring';
 
@@ -214,24 +214,43 @@ export class AppService {
   }
 
   async getTopUsers(from, to): Promise<ResponseSchema<{ count: number; username: string }[]>> {
-    console.log("request received");
-    const data = await this.knex.raw(`SELECT COUNT(*), username FROM tweets GROUP BY username`);
+    let res: TopUser[] = [];
+    const data = await this.knex.select(this.knex.raw(`COUNT(*) as count, username FROM tweets GROUP BY username`)).orderByRaw(`count DESC`).limit(3);
+    for (const d of data) {
+      const user_image = await this.knex.table('target_users').where('username', d.username).returning('image_url');
+      res.push({ username: d.username, count: d.count, image_url: user_image[0].image_url });
+    }
     return {
       status: true,
-      data: data.rows
+      data: res
     }
   }
 
   async getTopTweets(): Promise<ResponseSchema<Tweet[]>> {
-    console.log("request received");
-    const tweets = await this.knex.table('tweets').orderBy([{ column: 'likes', order: 'desc' }, { column: 'retweets', order: 'desc' }]).limit(10);
+    let res: TweetWithImage[] = [];
+    const tweets = await this.knex.table('tweets').orderBy([{ column: 'likes', order: 'desc' }, { column: 'retweets', order: 'desc' }]).limit(3);
+    for (const tweet of tweets) {
+      const users = await this.knex.table('target_users').where('username', tweet.username);
+      res.push({
+        id: tweet.id,
+        tweet_id: tweet.tweet_id,
+        username: tweet.username,
+        user_id: tweet.user_id,
+        text: tweet.text,
+        likes: tweet.likes,
+        retweets: tweet.retweets,
+        created_at: tweet.created_at,
+        image_url: users[0]?.image_url
+      });
+    }
     return {
       status: true,
-      data: tweets
+      data: res
     }
+
   }
 
-  async getTopKeywords(): Promise<ResponseSchema<any>> {
+  async getTopKeywords(): Promise<ResponseSchema<{ word: string, count: number }[]>> {
     console.log("request received");
     let freqs: { word: string, count: number }[] = [];
     let response: { word: string, count: number }[] = [];
@@ -246,7 +265,7 @@ export class AppService {
     freqs.forEach(elem => {
       response.push({ "word": elem.word, "count": elem.count })
     })
-    return { status: true, data: response };
+    return { status: true, data: response.slice(0, 3) };
   }
 
   async getTweetsTimeSeries(): Promise<ResponseSchema<{ count: number, hhour: number }[]>> {
