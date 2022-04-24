@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { keyword, ResponseSchema, Token, Tweet, User } from './dtos';
+import { keyword, ResponseSchema, Token, Tweet, TweetWithImage, User } from './dtos';
 import { ReportService } from './report.service';
 import { TwitterService } from './twitter.service';
 
@@ -18,8 +18,13 @@ export class AppController {
 
   //#region tweets
   @Get("/getTweetById")
-  getTweet(@Body('id') id: string): Promise<ResponseSchema<Tweet>> {
+  getTweetById(@Body('id') id: string): Promise<ResponseSchema<Tweet>> {
     return this.appService.getTweetById(id);
+  }
+
+  @Get("/getTweet")
+  getTweet(@Body('id') id: string): Promise<ResponseSchema<Tweet>> {
+    return this.twitterService.tweet(id);
   }
 
   @Get("getTweetsByUsername")
@@ -27,14 +32,13 @@ export class AppController {
     return this.appService.getTweetsByUsername(username);
   }
 
-  @Get("getAllTweets")
-  getAllTweets(): Promise<ResponseSchema<Tweet[]>> {
-    return this.appService.getAllTweets();
+  @Post("getAllTweets")
+  getAllTweets(@Body('offset') offset: number): Promise<ResponseSchema<Tweet[]>> {
+    return this.appService.getAllTweets(offset);
   }
 
   @Post("serachTweetByKeyword")
-  searchTweetByKeyword(@Body('keyword') keyword: string): Promise<ResponseSchema<Tweet[]>> {
-    console.log("search tweet by keyword");
+  searchTweetByKeyword(@Body('keyword') keyword: string): Promise<ResponseSchema<TweetWithImage[]>> {
     return this.appService.searchTweet(keyword);
   }
 
