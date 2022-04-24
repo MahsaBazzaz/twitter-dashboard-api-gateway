@@ -5,6 +5,7 @@ import { KnexModule } from 'nest-knexjs';
 import { ConfigModule } from '@nestjs/config';
 import { HttpModule } from '@nestjs/axios';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ReportService } from './report.service';
 require('dotenv').config({ path: '../.env' });
 
 @Module({
@@ -31,6 +32,6 @@ require('dotenv').config({ path: '../.env' });
     ScheduleModule.forRoot()
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,ReportService],
 })
 export class AppModule { }

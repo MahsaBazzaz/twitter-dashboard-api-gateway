@@ -1,10 +1,13 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { keyword, ResponseSchema, Token, Tweet, User } from './dtos';
+import { ReportService } from './report.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) { }
+  constructor(
+    private readonly appService: AppService,
+    private readonly reportService: ReportService) { }
 
   @Get()
   getHello(): string {
@@ -100,27 +103,27 @@ export class AppController {
     from.setHours(to.getHours() - 1);
     var fromTimezoneOffset = from.getTimezoneOffset() * 60000;
     var toTimezoneOffset = to.getTimezoneOffset() * 60000;
-    return this.appService.getTopUsers(new Date(from.getTime() - fromTimezoneOffset), new Date(to.getTime() - toTimezoneOffset));
+    return this.reportService.getTopUsers(new Date(from.getTime() - fromTimezoneOffset), new Date(to.getTime() - toTimezoneOffset));
   }
 
   @Get("getTopTweets")
   getTopTweets(): Promise<ResponseSchema<Tweet[]>> {
-    return this.appService.getTopTweets();
+    return this.reportService.getTopTweets();
   }
 
   @Get("getTopKeywords")
   getTopKeywords(): Promise<ResponseSchema<{ word: string, count: number }[]>> {
-    return this.appService.getTopKeywords();
+    return this.reportService.getTopKeywords();
   }
 
   @Get("getTweetsTimeSeries")
   getTweetsTimeSeries(): Promise<ResponseSchema<{ count: number; hhour: number; }[]>> {
-    return this.appService.getTweetsTimeSeries();
+    return this.reportService.getTweetsTimeSeries();
   }
 
   @Get("getMostFrequestWords")
   getMostFrequestWords(): Promise<ResponseSchema<Token[]>> {
-    return this.appService.getMostFrequestWords();
+    return this.reportService.getMostFrequestWords();
   }
 
   // @Get("getHeros")
