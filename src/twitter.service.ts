@@ -17,8 +17,6 @@ export class TwitterService {
 
         // Tell typescript it's a readonly app
         this.roClient = this.twitterClient.readOnly;
-
-        // Play with the built in methods
     }
 
     getHello(): string {

@@ -18,7 +18,7 @@ export class ReportService {
     let res: TopUser[] = [];
     const data = await this.knex.select(this.knex.raw(`COUNT(*) as count, username FROM tweets GROUP BY username`)).orderByRaw(`count DESC`).limit(3);
     for (const d of data) {
-      const user_image = await this.knex.table('target_users').where('username', d.username).returning('image_url');
+      const user_image = await this.knex.table('users').where('username', d.username).returning('image_url');
       res.push({ username: d.username, count: d.count, image_url: user_image[0].image_url });
     }
     return {
@@ -32,7 +32,7 @@ export class ReportService {
     let res: TweetWithImage[] = [];
     const tweets = await this.knex.table('tweets').orderBy([{ column: 'likes', order: 'desc' }, { column: 'retweets', order: 'desc' }]).limit(3);
     for (const tweet of tweets) {
-      const users = await this.knex.table('target_users').where('username', tweet.username);
+      const users = await this.knex.table('users').where('username', tweet.username);
       res.push({
         id: tweet.id,
         tweet_id: tweet.tweet_id,

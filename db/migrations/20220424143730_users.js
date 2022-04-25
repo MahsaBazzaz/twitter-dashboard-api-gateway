@@ -8,8 +8,8 @@ exports.up = function(knex) {
             table.increments('id');
             table.string('user_id').notNullable();
             table.string('username', 255).notNullable();
-            table.string('name').notNullable();
             table.text('image_url', 255).nullable();
+            table.string('name').nullable();
             table.boolean('verified').nullable();
             table.string('location').nullable();
             table.string('url').nullable();

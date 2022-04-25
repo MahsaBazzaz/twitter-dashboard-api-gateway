@@ -57,7 +57,7 @@ export class AppService {
     let res: TweetWithImage[] = [];
     const tweets = await this.knex.table('tweets').limit(10).offset(offset);
     for (const tweet of tweets) {
-      const users = await this.knex.table('target_users').where('username', tweet.username);
+      const users = await this.knex.table('users').where('username', tweet.username);
       res.push({
         id: tweet.id,
         tweet_id: tweet.tweet_id,
@@ -81,7 +81,7 @@ export class AppService {
     let res: TweetWithImage[] = [];
     const tweets = await this.knex.table('tweets').whereLike('text', `%${term}%`).orWhereLike('username', `%${term}%`);
     for (const tweet of tweets) {
-      const users = await this.knex.table('target_users').where('username', tweet.username);
+      const users = await this.knex.table('users').where('username', tweet.username);
       res.push({
         id: tweet.id,
         tweet_id: tweet.tweet_id,
@@ -102,7 +102,7 @@ export class AppService {
   }
   
   async getAllUsers(): Promise<ResponseSchema<User[]>> {
-    const users = await this.knex.table('target_users');
+    const users = await this.knex.table('users');
     return {
       ok: {
         data: users
