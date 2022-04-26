@@ -3,6 +3,7 @@ import { TweetV1 } from 'twitter-api-v2';
 import { AppService } from './app.service';
 import { CrawlerService } from './crawler.service';
 import { keyword, ResponseSchema, Token, Tweet, TweetWithImage, User } from './dtos';
+import { NlpService } from './nlp.service';
 import { ReportService } from './report.service';
 import { TwitterService } from './twitter.service';
 
@@ -12,8 +13,9 @@ export class AppController {
     private readonly appService: AppService,
     private readonly reportService: ReportService,
     private readonly twitterService: TwitterService,
-    private readonly crawlerService: CrawlerService) {
-    // this.stream();
+    private readonly crawlerService: CrawlerService,
+    private readonly nlpService: NlpService) {
+    this.stream();
   }
 
   @Get()
@@ -21,10 +23,20 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get("/tokenize")
-  tokenize(@Body('text') text: string): Promise<any> {
-    return this.crawlerService.tokenize(text);
-  }
+  // @Get("/tokenize")
+  // tokenize(@Body('text') text: string): Promise<any> {
+  //   return this.nlpService.tokenize(text);
+  // }
+
+  // @Get("/tokenizeAndStem")
+  // async tokenizeAndStem(@Body('text') text: string): Promise<any> {
+  //   const tweetTokens = await this.nlpService.tokenize(text);
+  //   let stems: string[] = [];
+  //   for (const element of tweetTokens) {
+  //     stems.push(await this.nlpService.stem(element));
+  //   }
+  //   return stems;
+  // }
 
   // @Get("/stream")
   stream(): Promise<any> {

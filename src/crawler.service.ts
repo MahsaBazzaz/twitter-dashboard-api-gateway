@@ -5,7 +5,7 @@ import { Cron } from '@nestjs/schedule';
 import { ResponseSchema } from './dtos';
 import 'dotenv/config';
 import { InjectModel } from 'nest-knexjs';
-const { removeStopwords, en, _123 } = require('stopword')
+import { NlpService } from './nlp.service';
 
 @Injectable()
 export class CrawlerService {
@@ -14,7 +14,10 @@ export class CrawlerService {
     private streamFilter: TweetStream<TweetV1>;
     private stream: TweetStream<TweetV2SingleStreamResult>;
 
-    constructor(@InjectModel() private readonly knex: Knex) {
+    constructor(
+        @InjectModel() private readonly knex: Knex,
+        private readonly nplService: NlpService
+    ) {
         // (create a OAuth 1.0a client)
         this.twitterClient = new TwitterApi({
             appKey: process.env.API_Key,
@@ -124,14 +127,18 @@ export class CrawlerService {
         return response;
     }
 
-    async tokenize(text: string): Promise<string[]> {
-        return removeStopwords(text.toLowerCase().replace(/[^a-zA-Z ]/g, "").split(' '), en)
-    }
+    // async tokenize(text: string): Promise<string[]> {
+    //     return removeStopwords(text.toLowerCase().replace(/[^a-zA-Z ]/g, "").split(' '), en)
+    // }
 
     async processTweet(tweet: TweetV1) {
         const t = await this.knex.table('tweets').where('tweet_id', tweet.id);
         if (t.length <= 0) {
-            const tweetTokens = await this.tokenize(tweet.text);
+            const tweetTokens = await this.nplService.tokenize(tweet.text);
+            let stems: string[] = [];
+            for (const element of tweetTokens) {
+                stems.push(await this.nplService.stem(element));
+            }
             const keywords = await this.getAllKeywords();
             const tokensIntersectionWithEnStopwords = tweetTokens.filter(value => keywords.ok.data.includes(value));
             if (tokensIntersectionWithEnStopwords.length > 0) {
