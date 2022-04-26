@@ -29,6 +29,16 @@ export class AppController {
   stream() {
     this.crawlerService.streamV1();
   }
+
+  @Get("close")
+  closeStream() {
+    this.crawlerService.restartStream();
+  }
+
+  // @Get("/updateTokens")
+  // updateTokens(): Promise<any> {
+  //   return this.appService.updateAllTokens();
+  // }
   // @Get("/tokenize")
   // tokenize(@Body('text') text: string): Promise<any> {
   //   return this.nlpService.tokenize(text);

@@ -9,7 +9,6 @@ export class NlpService {
     constructor() {
         this.tokenizer = new natural.AggressiveTokenizer();
         // natural.PorterStemmer.attach();
-        // console.log("i am waking up to the sounds of chainsaws".tokenizeAndStem());
     }
 
     getHello(): string {
@@ -32,8 +31,9 @@ export class NlpService {
     }
 
     async stem(word: string): Promise<string> {
-        let stem = natural.PorterStemmer.stem(word);
-        return stem;
+        let stem1 = natural.PorterStemmer.stem(word);
+        let stem2 = natural.LancasterStemmer.stem(word);
+        return stem2;
     }
 
     async getTokens(text: string): Promise<string[]> {
@@ -41,4 +41,6 @@ export class NlpService {
         let tokens = await this.tokenize(cleanedText.join(' '));
         return tokens;
     }
+
+    
 }

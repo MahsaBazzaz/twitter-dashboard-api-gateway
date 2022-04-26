@@ -30,10 +30,10 @@ export class UpdaterService {
     addToQueue(id: string) {
         console.log("addToQueue() " + id);
         this.queue.push(id);
-        if (this.queue.length > 10) this.queue.shift();
+        if (this.queue.length > 30) this.queue.shift();
     }
 
-    @Interval(5000)
+    @Interval(3000)
     async update() {
         console.log("update time! ");
         if (this.queue.length > 0) {

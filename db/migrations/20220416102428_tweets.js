@@ -13,6 +13,7 @@ exports.up = function(knex) {
             table.string('tweet_id').notNullable();
             table.integer('likes').notNullable();
             table.integer('retweets').notNullable();
+            table.json('query').nullable();
         })
 };
 

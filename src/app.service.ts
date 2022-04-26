@@ -4,6 +4,8 @@ import { InjectModel } from 'nest-knexjs';
 import { HttpService } from '@nestjs/axios';
 import { keyword, ResponseSchema, Token, TopUser, Tweet, TweetWithImage, User } from './dtos';
 import { TwitterService } from './twitter.service';
+import { NlpService } from './nlp.service';
+import { CrawlerService } from './crawler.service';
 
 
 @Injectable()
@@ -11,11 +13,31 @@ export class AppService {
   constructor(@InjectModel()
   private readonly knex: Knex,
     private httpService: HttpService,
-    private twitterService: TwitterService) { }
+    private twitterService: TwitterService,
+    private readonly nlpService: NlpService,
+    // private readonly crawlerService: CrawlerService
+    ) { }
 
   getHello(): string {
     return 'Hello World!';
   }
+
+  // async updateAllTokens() {
+  //   const tweets = await this.getAllTweets(0);
+  //   for (const tweet of tweets.ok.data) {
+  //     let tokens: string[] = await this.nlpService.getTokens(tweet.text);
+  //     let stems: string[] = [];
+  //     for (const element of tokens) {
+  //       stems.push(await this.nlpService.stem(element));
+  //     }
+  //     const keywords = await this.crawlerService.getAllKeywords();
+  //     const tokensIntersectionWithEnStopwords = tokens.filter(value => keywords.ok.data.includes(value));
+  //     const stemsIntersectionWithEnStopwords = stems.filter(value => keywords.ok.data.includes(value));
+  //     if (tokensIntersectionWithEnStopwords.length > 0 || stemsIntersectionWithEnStopwords.length > 0) {
+  //       await this.crawlerService.updateTokenTable(tokens, tweet.text);
+  //     }
+  //   }
+  // }
 
   async getTweetById(id: string): Promise<ResponseSchema<Tweet>> {
     const tweets = await this.knex.table('tweets').where('tweet_id', id);
@@ -55,7 +77,9 @@ export class AppService {
 
   async getAllTweets(offset: number): Promise<ResponseSchema<TweetWithImage[]>> {
     let res: TweetWithImage[] = [];
-    const tweets = await this.knex.table('tweets').orderBy('created_at', 'desc').limit(30).offset(offset); //TODO
+    const tweets = await this.knex.table('tweets').orderBy('created_at', 'desc')
+      // .limit(30)
+      .offset(offset); //TODO
     for (const tweet of tweets) {
       const users = await this.knex.table('users').where('user_id', tweet.user_id);
       if (users.length > 0) {

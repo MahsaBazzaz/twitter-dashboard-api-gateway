@@ -63,7 +63,7 @@ export class CrawlerService {
     async restartStream() {
         // Be sure to close the stream where you don't want to consume data anymore from it
         this.streamFilter.close();
-        this.streamV1();
+        // await this.streamV1();
     }
 
     async streamV2(): Promise<any> {
@@ -174,7 +174,7 @@ export class CrawlerService {
                     const stemsIntersectionWithEnStopwords = stems.filter(value => keywords.ok.data.includes(value));
                     if (tokensIntersectionWithEnStopwords.length > 0 || stemsIntersectionWithEnStopwords.length > 0) {
                         this.updaterService.addToQueue(id);
-                        await this.addTweet({ id: id, text: text, user_id: user_id, username: username, created_at: created_at, likes: likes, retweeted: retweets });
+                        await this.addTweet({ id: id, text: text, user_id: user_id, username: username, created_at: created_at, likes: likes, retweeted: retweets, query: tweet });
                         await this.updateTokenTable(tokens, text);
                         await this.addUserIfNotIncluded(username, user_id);
                     }
@@ -196,7 +196,8 @@ export class CrawlerService {
         username: string,
         created_at: string,
         likes: number,
-        retweeted: number
+        retweeted: number,
+        query: any
     }) {
         await this.knex.table('tweets').insert(
             [{
@@ -206,7 +207,8 @@ export class CrawlerService {
                 username: data.username,
                 created_at: data.created_at,
                 likes: data.likes,
-                retweets: data.retweeted
+                retweets: data.retweeted,
+                query: data.query
             }], '*')
             .then(result => {
                 console.log("addTweet() ok:" + result);
