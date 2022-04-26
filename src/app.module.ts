@@ -9,6 +9,7 @@ import { ReportService } from './report.service';
 import { TwitterService } from './twitter.service';
 import { CrawlerService } from './crawler.service';
 import { NlpService } from './nlp.service';
+import { UpdaterService } from './updater.service';
 require('dotenv').config({ path: '../.env' });
 
 @Module({
@@ -35,6 +36,6 @@ require('dotenv').config({ path: '../.env' });
     ScheduleModule.forRoot()
   ],
   controllers: [AppController],
-  providers: [AppService,ReportService,TwitterService,CrawlerService,NlpService],
+  providers: [AppService, ReportService, TwitterService, CrawlerService, NlpService, UpdaterService],
 })
 export class AppModule { }

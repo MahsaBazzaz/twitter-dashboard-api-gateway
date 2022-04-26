@@ -6,6 +6,7 @@ import { ResponseSchema } from './dtos';
 import 'dotenv/config';
 import { InjectModel } from 'nest-knexjs';
 import { NlpService } from './nlp.service';
+import { UpdaterService } from './updater.service';
 
 @Injectable()
 export class CrawlerService {
@@ -16,7 +17,8 @@ export class CrawlerService {
 
     constructor(
         @InjectModel() private readonly knex: Knex,
-        private readonly nplService: NlpService
+        private readonly nplService: NlpService,
+        private readonly updaterService: UpdaterService
     ) {
         // (create a OAuth 1.0a client)
         this.twitterClient = new TwitterApi({
@@ -36,16 +38,16 @@ export class CrawlerService {
         return 'Hello World!';
     }
 
-    // @Cron('45 * * * * *')
-    // update() {
-    // }
-
     async streamV1(): Promise<any> {
         let users: ResponseSchema<string[]> = await this.getAllUserIds();
         let keywords: ResponseSchema<string[]> = await this.getAllKeywords();
         if (users.ok && keywords.ok) {
-            this.streamFilter = await this.roClient.v1.filterStream({ follow: users.ok.data });
-            //track: keywords.ok.data, 'filter_level': 'medium'
+            this.streamFilter = await this.roClient.v1.filterStream({
+                follow: users.ok.data, tweet_mode: 'extended',
+                // track: keywords.ok.data, 
+                // 'filter_level': 'medium'
+            });
+
         }
 
         // You can also use async iterator to iterate over tweets!
@@ -53,6 +55,12 @@ export class CrawlerService {
             console.log("data received: " + data.text);
             this.processTweet(data);
         }
+    }
+
+    async restartStream() {
+        // Be sure to close the stream where you don't want to consume data anymore from it
+        this.streamFilter.close();
+        this.streamV1();
     }
 
     async streamV2(): Promise<any> {
@@ -115,10 +123,6 @@ export class CrawlerService {
     async getAllTokens(): Promise<ResponseSchema<{ token: string }[]>> {
         let response = await this.knex.table('tokens').returning('token')
             .then(result => {
-                // let res: string[] = []
-                // for (const token of result) {
-                //     res.push(token.token)
-                // }
                 return { ok: { data: result } };
             })
             .catch(err => {
@@ -127,48 +131,54 @@ export class CrawlerService {
         return response;
     }
 
-    // async tokenize(text: string): Promise<string[]> {
-    //     return removeStopwords(text.toLowerCase().replace(/[^a-zA-Z ]/g, "").split(' '), en)
-    // }
-
     async processTweet(tweet: TweetV1) {
-        const t = await this.knex.table('tweets').where('tweet_id', tweet.id);
-        if (t.length <= 0) {
-            const tweetTokens = await this.nplService.tokenize(tweet.text);
-            let stems: string[] = [];
-            for (const element of tweetTokens) {
-                stems.push(await this.nplService.stem(element));
-            }
-            const keywords = await this.getAllKeywords();
-            const tokensIntersectionWithEnStopwords = tweetTokens.filter(value => keywords.ok.data.includes(value));
-            if (tokensIntersectionWithEnStopwords.length > 0) {
-                await this.addTweet(tweet);
-                await this.updateTokenTable(tweetTokens, tweet.text);
-            }
-        }
-        else {
-            console.log('tweet already exists');
-        }
+        // console.log(tweet.id);
+        await this.knex.table('tweets').where('tweet_id', tweet.id_str)
+            .then(async (result) => {
+                if (result.length <= 0) {
+                    let tokens: string[] = await this.nplService.getTokens(tweet.text);
+                    let stems: string[] = [];
+                    for (const element of tokens) {
+                        stems.push(await this.nplService.stem(element));
+                    }
+                    const keywords = await this.getAllKeywords();
+                    const tokensIntersectionWithEnStopwords = tokens.filter(value => keywords.ok.data.includes(value));
+                    const stemsIntersectionWithEnStopwords = stems.filter(value => keywords.ok.data.includes(value));
+                    if (tokensIntersectionWithEnStopwords.length > 0 || stemsIntersectionWithEnStopwords.length > 0) {
+                        this.updaterService.addToQueue(tweet.id.toString());
+                        await this.addTweet(tweet);
+                        await this.updateTokenTable(tokens, tweet.text);
+                    }
+                }
+                else {
+                    console.log('tweet already exists');
+                }
+            })
+            .catch(err => {
+                console.log('processTweet()' + err);
+            });
+
     }
 
     async addTweet(tweet: TweetV1) {
-        let response = await this.knex.table('tweets').insert(
+        let txt: string;
+        tweet?.full_text ? txt = tweet.full_text : txt = tweet.text;
+        await this.knex.table('tweets').insert(
             [{
-                text: tweet.text,
+                text: txt,
                 username: tweet.user.screen_name,
                 created_at: tweet.created_at,
-                user_id: tweet.user.id,
-                tweet_id: tweet.id,
+                user_id: tweet.user.id_str,
+                tweet_id: tweet.id_str,
                 likes: tweet.favorite_count,
                 retweets: tweet.retweet_count
             }], '*')
             .then(result => {
-                return { ok: { data: result } }
+                console.log("addTweet() ok:" + result);
             })
             .catch(err => {
-                return { err: { message: err } }
+                console.log("addTweet() err:" + err);
             });
-        console.log("addTweet() " + response);
     }
 
     async updateTokenTable(tweetTokens: string[], text: string) {
@@ -192,18 +202,17 @@ export class CrawlerService {
                 count: count
             }], '*')
             .then(result => {
-                console.log("addToken() ok : " + token + " " + count)
+                // console.log("addToken() ok : " + token + " " + count)
             })
             .catch(err => {
                 console.log("addToken() err: " + err)
             });
-        console.log("addToken() " + response);
     }
 
     async updateToken(token: string, count: number) {
         await this.knex.table('tokens').increment('count', count).where('token', token)
             .then(result => {
-                console.log("updateToken() ok: " + token + " " + count)
+                // console.log("updateToken() ok: " + token + " " + count)
             })
             .catch(err => {
                 console.log("updateToken() err: " + err)

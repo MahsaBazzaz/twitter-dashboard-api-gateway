@@ -39,12 +39,15 @@ export class TwitterService {
     }
 
     async tweet(id: string): Promise<ResponseSchema<TWeetById>> {
-        const response = await this.roClient.v2.tweets(id,
+        console.log(id);
+        const response = await this.roClient.v2.tweets(id
+            ,
             {
                 "tweet.fields": ["attachments", "author_id", "context_annotations", "conversation_id", "created_at",
                     "entities", "geo", "id", "in_reply_to_user_id", "lang", "public_metrics", "possibly_sensitive", "referenced_tweets",
                     "reply_settings", "source", "text", "withheld"],
-            });
+            }
+            );
         if (response.errors) {
             return { err: { message: response.errors[0].detail } }
         }

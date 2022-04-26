@@ -14,12 +14,13 @@ export class ReportService {
     return 'Hello World!';
   }
 
-  async getTopUsers(from, to): Promise<ResponseSchema<{ count: number; username: string }[]>> {
+  async getTopUsers(from, to): Promise<ResponseSchema<{ count: number; username: string, image_url: string }[]>> {
     let res: TopUser[] = [];
-    const data = await this.knex.select(this.knex.raw(`COUNT(*) as count, username FROM tweets GROUP BY username`)).orderByRaw(`count DESC`).limit(3);
+    const data = await this.knex.select(this.knex.raw(`COUNT(*) as count, user_id FROM tweets GROUP BY user_id`)).orderByRaw(`count DESC`).limit(10);
     for (const d of data) {
-      const user_image = await this.knex.table('users').where('username', d.username).returning('image_url');
-      res.push({ username: d.username, count: d.count, image_url: user_image[0].image_url });
+      const user = await this.knex.table('users').where('user_id', d.user_id);
+      if (user.length > 0)
+        res.push({ username: user[0].username, count: d.count, image_url: user[0].image_url });
     }
     return {
       ok: {
@@ -30,20 +31,22 @@ export class ReportService {
 
   async getTopTweets(): Promise<ResponseSchema<Tweet[]>> {
     let res: TweetWithImage[] = [];
-    const tweets = await this.knex.table('tweets').orderBy([{ column: 'likes', order: 'desc' }, { column: 'retweets', order: 'desc' }]).limit(3);
+    const tweets = await this.knex.table('tweets').orderBy([{ column: 'likes', order: 'desc' }, { column: 'retweets', order: 'desc' }]).limit(10);
     for (const tweet of tweets) {
-      const users = await this.knex.table('users').where('username', tweet.username);
-      res.push({
-        id: tweet.id,
-        tweet_id: tweet.tweet_id,
-        username: tweet.username,
-        user_id: tweet.user_id,
-        text: tweet.text,
-        likes: tweet.likes,
-        retweets: tweet.retweets,
-        created_at: tweet.created_at,
-        image_url: users[0]?.image_url
-      });
+      const users = await this.knex.table('users').where('user_id', tweet.user_id);
+      if (users.length > 0) {
+        res.push({
+          id: tweet.id,
+          tweet_id: tweet.tweet_id,
+          username: users[0]?.username,
+          user_id: tweet.user_id,
+          text: tweet.text,
+          likes: tweet.likes,
+          retweets: tweet.retweets,
+          created_at: tweet.created_at,
+          image_url: users[0]?.image_url
+        });
+      }
     }
     return {
       ok: {
@@ -67,7 +70,7 @@ export class ReportService {
     freqs.forEach(elem => {
       response.push({ "word": elem.word, "count": elem.count })
     })
-    return { ok: { data: response.slice(0, 3) } };
+    return { ok: { data: response.slice(0, 10) } };
   }
 
   async getTweetsTimeSeries(): Promise<ResponseSchema<{ count: number, hhour: number }[]>> {

@@ -6,6 +6,7 @@ import { keyword, ResponseSchema, Token, Tweet, TweetWithImage, User } from './d
 import { NlpService } from './nlp.service';
 import { ReportService } from './report.service';
 import { TwitterService } from './twitter.service';
+import { UpdaterService } from './updater.service';
 
 @Controller()
 export class AppController {
@@ -14,8 +15,10 @@ export class AppController {
     private readonly reportService: ReportService,
     private readonly twitterService: TwitterService,
     private readonly crawlerService: CrawlerService,
-    private readonly nlpService: NlpService) {
+    private readonly nlpService: NlpService,
+    private readonly updaterService: UpdaterService) {
     this.stream();
+    this.updaterService.init();
   }
 
   @Get()
@@ -39,8 +42,8 @@ export class AppController {
   // }
 
   // @Get("/stream")
-  stream(): Promise<any> {
-    return this.crawlerService.streamV1();
+  stream() {
+    this.crawlerService.streamV1();
   }
 
   // @Get("/process")
@@ -116,13 +119,17 @@ export class AppController {
   }
 
   @Post("addUser")
-  addUser(@Body('username') username: string): Promise<ResponseSchema<User>> {
-    return this.appService.addUser(username);
+  async addUser(@Body('username') username: string): Promise<ResponseSchema<User>> {
+    let res = await this.appService.addUser(username);
+    // this.crawlerService.restartStream();
+    return res;
   }
 
   @Post("removeUser")
   removeUser(@Body('username') username: string): Promise<ResponseSchema<any>> {
-    return this.appService.removeUser(username);
+    let res = this.appService.removeUser(username);
+    // this.crawlerService.restartStream();
+    return res;
   }
 
   @Post("searchUser")
@@ -147,13 +154,17 @@ export class AppController {
   }
 
   @Post("addKeyword")
-  addKeyword(@Body('keyword') keyword: string): Promise<ResponseSchema<keyword>> {
-    return this.appService.addKeyword(keyword);
+  async addKeyword(@Body('keyword') keyword: string): Promise<ResponseSchema<keyword>> {
+    let res = await this.appService.addKeyword(keyword);
+    // this.crawlerService.restartStream();
+    return res;
   }
 
   @Post("removeKeyword")
-  removeKeyword(@Body('keyword') keyword: string): Promise<ResponseSchema<any>> {
-    return this.appService.removeKeyword(keyword);
+  async removeKeyword(@Body('keyword') keyword: string): Promise<ResponseSchema<any>> {
+    let res = await this.appService.removeKeyword(keyword);
+    // this.crawlerService.restartStream();
+    return res;
   }
 
   @Post("serachKeywords")

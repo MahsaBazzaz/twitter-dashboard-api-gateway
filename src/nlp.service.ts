@@ -1,43 +1,44 @@
 import { Injectable } from '@nestjs/common';
-import { Knex } from 'knex';
-import { InjectModel } from 'nest-knexjs';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
 import 'dotenv/config';
-import { ResponseSchema } from './dtos';
 var natural = require('natural');
+const { removeStopwords, eng } = require('stopword')
 
 @Injectable()
 export class NlpService {
     private readonly tokenizer;
-    // private readonly stemmer;
     constructor() {
-        this.tokenizer = new natural.AggressiveTokenizer();
+        this.tokenizer = new natural.WordTokenizer();
+        // natural.PorterStemmer.attach();
+        // console.log("i am waking up to the sounds of chainsaws".tokenizeAndStem());
     }
 
     getHello(): string {
         return 'Hello World!';
     }
 
-    async clean(input: string): Promise<string> {
-        let output: string = "";
-        let text = input.toLowerCase().split(' ');
-        for (const t of text) {
-            if (!t.includes("@"))
-                output += " " + t;
+    private async clean(input: string[]): Promise<string[]> {
+        let newString: string[] = [];
+        for (const t of input) {
+            if (!t.includes("@") && !t.includes("https:") && !t.includes("www.") && !t.includes("http:"))
+                newString.push(t)
         }
+        const output = removeStopwords(newString, eng);
         return output;
     }
 
-    async tokenize(text: string): Promise<string[]> {
-        let cleanedText = await this.clean(text);
-        let tokens = this.tokenizer.tokenize(cleanedText.toLowerCase());
+    private async tokenize(text: string): Promise<string[]> {
+        let tokens = this.tokenizer.tokenize(text);
         return tokens;
     }
 
     async stem(word: string): Promise<string> {
-        let stem = natural.PorterStemmer.stem(word.toLowerCase());
+        let stem = natural.PorterStemmer.stem(word);
         return stem;
     }
 
+    async getTokens(text: string): Promise<string[]> {
+        let cleanedText = await this.clean(text.toLowerCase().split(' '));
+        let tokens = await this.tokenize(cleanedText.join(' '));
+        return tokens;
+    }
 }
