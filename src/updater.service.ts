@@ -33,7 +33,7 @@ export class UpdaterService {
         if (this.queue.length > 10) this.queue.shift();
     }
 
-    @Interval(10000)
+    // @Interval(10000)
     async update() {
         console.log("update time! ");
         if (this.queue.length > 0) {

@@ -230,35 +230,109 @@ export class AppService {
     }
   }
 
-  async sortTweetsByDate(order: boolean): Promise<ResponseSchema<Tweet[]>> {
+  async sortTweetsByDate(order: boolean): Promise<ResponseSchema<TweetWithImage[]>> {
     let by: string;
-    order ? by = 'desc' : 'asc';
-    const tweets = await this.knex.table('tweets').orderBy('created_at', by);
+    order ? by = 'desc' : by = 'asc';
+
+    // const tweets = await this.knex.table('tweets').orderBy('created_at', by);
+    // return {
+    //   ok: {
+    //     data: tweets
+    //   }
+    // }
+
+    let res: TweetWithImage[] = [];
+    const tweets = await this.knex.raw(`SELECT * FROM tweets WHERE tweet_id IN (SELECT tweet_id FROM tweets ORDER BY id DESC LIMIT 30) ORDER BY created_at ${by};`)
+    for (const tweet of tweets.rows) {
+      const users = await this.knex.table('users').where('user_id', tweet.user_id);
+      if (users.length > 0) {
+        res.push({
+          id: tweet.id,
+          tweet_id: tweet.tweet_id,
+          username: users[0].username,
+          user_id: tweet.user_id,
+          text: tweet.text,
+          likes: tweet.likes,
+          retweets: tweet.retweets,
+          created_at: tweet.created_at,
+          image_url: users[0]?.image_url
+        });
+      }
+    }
     return {
       ok: {
-        data: tweets
+        data: res
       }
     }
   }
 
-  async sortTweetsByLikes(order: boolean): Promise<ResponseSchema<Tweet[]>> {
+  async sortTweetsByLikes(order: boolean): Promise<ResponseSchema<TweetWithImage[]>> {
     let by: string;
-    order ? by = 'desc' : 'asc';
-    const tweets = await this.knex.table('tweets').orderBy('likes', by);
+    order ? by = 'desc' : by = 'asc';
+
+    // const tweets = await this.knex.table('tweets').orderBy('likes', by);
+    // return {
+    //   ok: {
+    //     data: tweets
+    //   }
+    // }
+
+    let res: TweetWithImage[] = [];
+    const tweets = await this.knex.raw(`SELECT * FROM tweets WHERE tweet_id IN (SELECT tweet_id FROM tweets ORDER BY id DESC LIMIT 30) ORDER BY likes ${by};`)
+    for (const tweet of tweets.rows) {
+      const users = await this.knex.table('users').where('user_id', tweet.user_id);
+      if (users.length > 0) {
+        res.push({
+          id: tweet.id,
+          tweet_id: tweet.tweet_id,
+          username: users[0].username,
+          user_id: tweet.user_id,
+          text: tweet.text,
+          likes: tweet.likes,
+          retweets: tweet.retweets,
+          created_at: tweet.created_at,
+          image_url: users[0]?.image_url
+        });
+      }
+    }
     return {
       ok: {
-        data: tweets
+        data: res
       }
     }
   }
 
-  async sortTweetsByRetweets(order: boolean): Promise<ResponseSchema<Tweet[]>> {
+  async sortTweetsByRetweets(order: boolean): Promise<ResponseSchema<TweetWithImage[]>> {
     let by: string;
-    order ? by = 'desc' : 'asc';
-    const tweets = await this.knex.table('tweets').orderBy('retweets', by);
+    order ? by = 'desc' : by = 'asc';
+    // const tweets = await this.knex.table('tweets').orderBy('retweets', by);
+    // return {
+    //   ok: {
+    //     data: tweets
+    //   }
+    // }
+
+    let res: TweetWithImage[] = [];
+    const tweets = await this.knex.raw(`SELECT * FROM tweets WHERE tweet_id IN (SELECT tweet_id FROM tweets ORDER BY id DESC LIMIT 30) ORDER BY retweets ${by};`)
+    for (const tweet of tweets.rows) {
+      const users = await this.knex.table('users').where('user_id', tweet.user_id);
+      if (users.length > 0) {
+        res.push({
+          id: tweet.id,
+          tweet_id: tweet.tweet_id,
+          username: users[0].username,
+          user_id: tweet.user_id,
+          text: tweet.text,
+          likes: tweet.likes,
+          retweets: tweet.retweets,
+          created_at: tweet.created_at,
+          image_url: users[0]?.image_url
+        });
+      }
+    }
     return {
       ok: {
-        data: tweets
+        data: res
       }
     }
   }
