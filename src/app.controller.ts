@@ -1,5 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
+import { TweetV1 } from 'twitter-api-v2';
 import { AppService } from './app.service';
+import { CrawlerService } from './crawler.service';
 import { keyword, ResponseSchema, Token, Tweet, TweetWithImage, User } from './dtos';
 import { ReportService } from './report.service';
 import { TwitterService } from './twitter.service';
@@ -9,12 +11,42 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly reportService: ReportService,
-    private readonly twitterService: TwitterService) { }
+    private readonly twitterService: TwitterService,
+    private readonly crawlerService: CrawlerService) {
+    // this.stream();
+  }
 
   @Get()
   getHello(): string {
     return this.appService.getHello();
   }
+
+  @Get("/tokenize")
+  tokenize(@Body('text') text: string): Promise<any> {
+    return this.crawlerService.tokenize(text);
+  }
+
+  // @Get("/stream")
+  stream(): Promise<any> {
+    return this.crawlerService.streamV1();
+  }
+
+  // @Get("/process")
+  // processTweet(@Body('tweet') tweet: TweetV1): Promise<any> {
+  //   return this.crawlerService.processTweet(tweet);
+  // }
+
+  // @Get("/allTokens")
+  // allTokens(): Promise<any> {
+  //   return this.crawlerService.getAllTokens();
+  // }
+
+  // @Get("/updateTokenTable")
+  // updateTokenTable(): Promise<any> {
+  //   let tokens = ["security"];
+  //   let text = "this is a tweet containing security";
+  //   return this.crawlerService.updateTokenTable(tokens, text);
+  // }
 
   //#region tweets
   @Get("/getTweetById")
