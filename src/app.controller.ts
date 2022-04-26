@@ -26,6 +26,9 @@ export class AppController {
     return this.appService.getHello();
   }
 
+  stream() {
+    this.crawlerService.streamV1();
+  }
   // @Get("/tokenize")
   // tokenize(@Body('text') text: string): Promise<any> {
   //   return this.nlpService.tokenize(text);
@@ -40,11 +43,6 @@ export class AppController {
   //   }
   //   return stems;
   // }
-
-  // @Get("/stream")
-  stream() {
-    this.crawlerService.streamV1();
-  }
 
   // @Get("/process")
   // processTweet(@Body('tweet') tweet: TweetV1): Promise<any> {
@@ -91,19 +89,16 @@ export class AppController {
 
   @Post("sortTweetsByDate")
   sortTweetsByDate(@Body('order') order: boolean): Promise<ResponseSchema<Tweet[]>> {
-    console.log("sort by date : " + order);
     return this.appService.sortTweetsByDate(order);
   }
 
   @Post("sortTweetsByLikes")
   sortTweetsByLikes(@Body('order') order: boolean): Promise<ResponseSchema<Tweet[]>> {
-    console.log("sort by likes : " + order);
     return this.appService.sortTweetsByLikes(order);
   }
 
   @Post("sortTweetsByRetweets")
   sortTweetsByRetweets(@Body('order') order: boolean): Promise<ResponseSchema<Tweet[]>> {
-    console.log("sort by retweets : " + order);
     return this.appService.sortTweetsByRetweets(order);
   }
   //#endregion
@@ -114,7 +109,6 @@ export class AppController {
   //#region users
   @Get("getAllUsers")
   getAllUsers(): Promise<ResponseSchema<User[]>> {
-    console.log("request received");
     return this.appService.getAllUsers();
   }
 
@@ -134,7 +128,6 @@ export class AppController {
 
   @Post("searchUser")
   searchUser(@Body('username') username: string): Promise<ResponseSchema<any>> {
-    console.log("search user account");
     return this.appService.searchUser(username);
   }
 
@@ -169,7 +162,6 @@ export class AppController {
 
   @Post("serachKeywords")
   searchKeyword(@Body('keyword') keyword: string): Promise<ResponseSchema<any>> {
-    console.log("search keyword");
     return this.appService.searchKeyword(keyword);
   }
   //#endregion

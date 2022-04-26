@@ -7,7 +7,7 @@ const { removeStopwords, eng } = require('stopword')
 export class NlpService {
     private readonly tokenizer;
     constructor() {
-        this.tokenizer = new natural.WordTokenizer();
+        this.tokenizer = new natural.AggressiveTokenizer();
         // natural.PorterStemmer.attach();
         // console.log("i am waking up to the sounds of chainsaws".tokenizeAndStem());
     }

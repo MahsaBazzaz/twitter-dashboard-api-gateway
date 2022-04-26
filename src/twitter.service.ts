@@ -49,7 +49,6 @@ export class TwitterService {
     }
 
     async tweet(id: string): Promise<any> {
-        console.log(id);
         const response: TweetV2SingleResult = await this.roClient.v2.singleTweet(id
             ,
             {
@@ -62,22 +61,7 @@ export class TwitterService {
             return { err: { message: response.errors[0].detail } }
         }
         if (response.data) {
-            return { ok: { data: response.data[0] } }
+            return { ok: { data: response.data } }
         }
-        // let response = await this.client.get(`https://api.twitter.com/2/tweets/${id}?`, {
-        //     "expansions": "author_id,geo.place_id",
-        //     "tweet.fields": "author_id,geo,id,public_metrics,source,text",
-        //     "place.fields": "country_code,geo",
-        //     "user.fields": "id,username,profile_image_url"
-        // })
-        //     .then(function (tweet) {
-        //         return { ok: { data: tweet } }
-        //     })
-        //     .catch(function (error) {
-        //         return { err: { message: error } }
-        //     })
-        // return response;
-
     }
-
 }
