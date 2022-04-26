@@ -145,7 +145,7 @@ export class CrawlerService {
                     const tokensIntersectionWithEnStopwords = tokens.filter(value => keywords.ok.data.includes(value));
                     const stemsIntersectionWithEnStopwords = stems.filter(value => keywords.ok.data.includes(value));
                     if (tokensIntersectionWithEnStopwords.length > 0 || stemsIntersectionWithEnStopwords.length > 0) {
-                        this.updaterService.addToQueue(tweet.id.toString());
+                        this.updaterService.addToQueue(tweet.id_str);
                         await this.addTweet(tweet);
                         await this.updateTokenTable(tokens, tweet.text);
                     }

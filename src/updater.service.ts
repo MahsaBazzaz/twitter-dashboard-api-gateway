@@ -2,8 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import 'dotenv/config';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron, CronExpression, Interval } from '@nestjs/schedule';
 import { TwitterService } from './twitter.service';
+import { TweetV2 } from 'twitter-api-v2';
+import { ResponseSchema } from './dtos';
 
 @Injectable()
 export class UpdaterService {
@@ -31,12 +33,12 @@ export class UpdaterService {
         if (this.queue.length > 10) this.queue.shift();
     }
 
-    // @Cron(CronExpression.EVERY_10_SECONDS)
+    @Interval(10000)
     async update() {
-        console.log("update time!");
+        console.log("update time! ");
         if (this.queue.length > 0) {
-            console.log("update() " + this.queue[this.index]);
-            let tweet = await this.twitterService.tweet(this.queue[this.index]);
+            console.log("update() " + this.index + this.queue[this.index]);
+            let tweet  : ResponseSchema<TweetV2>= await this.twitterService.tweet(this.queue[this.index]);
             if (tweet.ok) {
                 await this.knex.table('tweets')
                     .where('tweet_id', tweet.ok.data.id)
@@ -45,14 +47,14 @@ export class UpdaterService {
                     .then(result => {
                         console.log("update() ok: " + result)
                         this.index++;
-                        if (this.index > this.queue.length) this.index = 0
+                        if (this.index >= this.queue.length) this.index = 0
                     })
                     .catch(err => {
-                        console.log("updateToken() db err: " + err)
+                        console.log("update() db err: " + err)
                     });
             }
             else {
-                console.log("updateToken() twitter err: " + tweet.err.message);
+                console.log("update() twitter err: " + tweet.err.message);
             }
         }
     }

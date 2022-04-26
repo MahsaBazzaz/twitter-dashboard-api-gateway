@@ -3,7 +3,7 @@ import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import { HttpService } from '@nestjs/axios';
 import { keyword, ResponseSchema, Token, TopUser, Tweet, TWeetById, TweetWithImage, User, UserByUsername } from './dtos';
-import { TwitterApi, TwitterApiReadOnly } from 'twitter-api-v2';
+import { TweetV2, TweetV2LookupResult, TweetV2SingleResult, TwitterApi, TwitterApiReadOnly } from 'twitter-api-v2';
 import { ConfigService } from '@nestjs/config';
 import 'dotenv/config';
 
@@ -38,9 +38,9 @@ export class TwitterService {
         }
     }
 
-    async tweet(id: string): Promise<ResponseSchema<TWeetById>> {
+    async tweet(id: string): Promise<ResponseSchema<TweetV2>> {
         console.log(id);
-        const response = await this.roClient.v2.tweets(id
+        const response  : TweetV2SingleResult = await this.roClient.v2.singleTweet(id
             ,
             {
                 "tweet.fields": ["attachments", "author_id", "context_annotations", "conversation_id", "created_at",

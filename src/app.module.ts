@@ -26,6 +26,9 @@ require('dotenv').config({ path: '../.env' });
           password: 'pa$$w0rd',
           database: 'twitter'
         },
+        pool :{
+          max : 5
+        }
       },
     }),
     ConfigModule.forRoot({
