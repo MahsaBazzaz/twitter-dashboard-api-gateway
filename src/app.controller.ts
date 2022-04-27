@@ -30,7 +30,7 @@ export class AppController {
 
   @Post("getAllTweets")
   getAllTweets(@Body('offset') offset: number): Promise<ResponseSchema<Tweet[]>> {
-    return this.appService.getAllTweets(offset);
+    return this.appService.getAllTweets(30, offset);
   }
 
   @Post("serachTweetByKeyword")
