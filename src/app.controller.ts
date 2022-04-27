@@ -1,12 +1,8 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { TweetV1 } from 'twitter-api-v2';
 import { AppService } from './app.service';
-// import { CrawlerService } from './crawler.service';
-import { keyword, ResponseSchema, Token, Tweet, TweetWithImage, User } from './dtos';
-// import { NlpService } from './nlp.service';
-import { ReportService } from './report.service';
 import { TwitterService } from './twitter.service';
-// import { UpdaterService } from './updater.service';
+import { ReportService } from './report.service';
+import { keyword, ResponseSchema, Token, Tweet, TweetWithImage, User } from './dtos';
 
 @Controller()
 export class AppController {
@@ -14,74 +10,18 @@ export class AppController {
     private readonly appService: AppService,
     private readonly reportService: ReportService,
     private readonly twitterService: TwitterService,
-    // private readonly crawlerService: CrawlerService,
-    // private readonly nlpService: NlpService,
-    // private readonly updaterService: UpdaterService
-    ) {
-    // this.stream();
-    // this.updaterService.init();
-  }
+  ) { }
 
   @Get()
   getHello(): string {
     return this.appService.getHello();
   }
 
-  // stream() {
-  //   this.crawlerService.streamV1();
-  // }
-
-  // @Get("close")
-  // closeStream() {
-  //   this.crawlerService.restartStream();
-  // }
-
-  // @Get("/updateTokens")
-  // updateTokens(): Promise<any> {
-  //   return this.appService.updateAllTokens();
-  // }
-  // @Get("/tokenize")
-  // tokenize(@Body('text') text: string): Promise<any> {
-  //   return this.nlpService.tokenize(text);
-  // }
-
-  // @Get("/tokenizeAndStem")
-  // async tokenizeAndStem(@Body('text') text: string): Promise<any> {
-  //   const tweetTokens = await this.nlpService.tokenize(text);
-  //   let stems: string[] = [];
-  //   for (const element of tweetTokens) {
-  //     stems.push(await this.nlpService.stem(element));
-  //   }
-  //   return stems;
-  // }
-
-  // @Get("/process")
-  // processTweet(@Body('tweet') tweet: TweetV1): Promise<any> {
-  //   return this.crawlerService.processTweet(tweet);
-  // }
-
-  // @Get("/allTokens")
-  // allTokens(): Promise<any> {
-  //   return this.crawlerService.getAllTokens();
-  // }
-
-  // @Get("/updateTokenTable")
-  // updateTokenTable(): Promise<any> {
-  //   let tokens = ["security"];
-  //   let text = "this is a tweet containing security";
-  //   return this.crawlerService.updateTokenTable(tokens, text);
-  // }
-
   //#region tweets
   @Get("/getTweetById")
   getTweetById(@Body('id') id: string): Promise<ResponseSchema<Tweet>> {
     return this.appService.getTweetById(id);
   }
-
-  // @Get("/getTweet")
-  // getTweet(@Body('id') id: string): Promise<ResponseSchema<any>> {
-  //   return this.twitterService.tweet(id);
-  // }
 
   @Get("getTweetsByUsername")
   getTweetsByUsername(@Body('username') username: string): Promise<ResponseSchema<Tweet[]>> {

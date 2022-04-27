@@ -2,13 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import { HttpService } from '@nestjs/axios';
-import { keyword, ResponseSchema, Token, TopUser, Tweet, TweetWithImage, User } from './dtos';
+import { keyword, ResponseSchema, Token, TopUser, Tweet, TweetWithImage } from './dtos';
 
 @Injectable()
 export class ReportService {
   constructor(@InjectModel()
-  private readonly knex: Knex,
-    private httpService: HttpService) { }
+  private readonly knex: Knex) { }
 
   getHello(): string {
     return 'Hello World!';
@@ -56,7 +55,6 @@ export class ReportService {
   }
 
   async getTopKeywords(): Promise<ResponseSchema<{ word: string, count: number }[]>> {
-    console.log("request received");
     let freqs: { word: string, count: number }[] = [];
     let response: { word: string, count: number }[] = [];
     let keywords: keyword[] = await this.knex.table('keywords');
@@ -74,7 +72,6 @@ export class ReportService {
   }
 
   async getTweetsTimeSeries(): Promise<ResponseSchema<{ count: number, hhour: number }[]>> {
-    console.log("request received");
     const data = await this.knex.raw("SELECT COUNT(*), extract(hour from created_at) as hhour FROM tweets WHERE created_at >= current_date at time zone 'UTC' - interval '7 days' GROUP BY hhour ORDER BY hhour");
     return {
       ok: {
@@ -84,7 +81,6 @@ export class ReportService {
   }
 
   async getMostFrequestWords(): Promise<ResponseSchema<Token[]>> {
-    console.log("request received");
     const tokens = await this.knex.table('tokens').orderBy('count', 'desc').limit(50);
     return {
       ok: {

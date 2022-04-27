@@ -1,31 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Knex } from 'knex';
-import { InjectModel } from 'nest-knexjs';
-import { keyword, ResponseSchema, Token, TopUser, Tweet, TWeetById, TweetWithImage, User, UserByUsername } from './dtos';
-import { TweetV2, TweetV2LookupResult, TweetV2SingleResult, TwitterApi, TwitterApiReadOnly } from 'twitter-api-v2';
+import { Injectable } from '@nestjs/common';
+import { ResponseSchema } from './dtos';
+import { TwitterApi, TwitterApiReadOnly } from 'twitter-api-v2';
 import 'dotenv/config';
-import { HttpService } from '@nestjs/axios';
-var Twitter = require('twitter');
-import { AxiosResponse } from 'axios';
-import { firstValueFrom, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 @Injectable()
 export class TwitterService {
     private twitterClient: TwitterApi;
     private readonly roClient: TwitterApiReadOnly;
 
-    // private readonly client;
-    constructor(private readonly httpService: HttpService) {
+    constructor() {
         // Instanciate with desired auth type (here's Bearer v2 auth)
         this.twitterClient = new TwitterApi(process.env.bearer_token);
         // Tell typescript it's a readonly app
         this.roClient = this.twitterClient.readOnly;
-
-        // this.client = new Twitter({
-        //     consumer_key: process.env.consumer_key,
-        //     consumer_secret: process.env.consumer_secret,
-        //     bearer_token: process.env.bearer_token
-        // });
     }
 
     getHello(): string {
@@ -47,21 +33,4 @@ export class TwitterService {
         }
         return null;
     }
-
-    // async tweet(id: string): Promise<any> {
-    //     const response: TweetV2SingleResult = await this.roClient.v2.singleTweet(id
-    //         ,
-    //         {
-    //             "tweet.fields": ["attachments", "author_id", "context_annotations", "conversation_id", "created_at",
-    //                 "entities", "geo", "id", "in_reply_to_user_id", "lang", "public_metrics", "possibly_sensitive", "referenced_tweets",
-    //                 "reply_settings", "source", "text", "withheld"],
-    //         }
-    //     );
-    //     if (response.errors) {
-    //         return { err: { message: response.errors[0].detail } }
-    //     }
-    //     if (response.data) {
-    //         return { ok: { data: response.data } }
-    //     }
-    // }
 }
