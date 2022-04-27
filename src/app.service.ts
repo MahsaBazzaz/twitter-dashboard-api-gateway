@@ -4,8 +4,8 @@ import { InjectModel } from 'nest-knexjs';
 import { HttpService } from '@nestjs/axios';
 import { keyword, ResponseSchema, Token, TopUser, Tweet, TweetWithImage, User } from './dtos';
 import { TwitterService } from './twitter.service';
-import { NlpService } from './nlp.service';
-import { CrawlerService } from './crawler.service';
+// import { NlpService } from './nlp.service';
+// import { CrawlerService } from './crawler.service';
 
 
 @Injectable()
@@ -14,9 +14,9 @@ export class AppService {
   private readonly knex: Knex,
     private httpService: HttpService,
     private twitterService: TwitterService,
-    private readonly nlpService: NlpService,
+    // private readonly nlpService: NlpService,
     // private readonly crawlerService: CrawlerService
-    ) { }
+  ) { }
 
   getHello(): string {
     return 'Hello World!';
@@ -77,8 +77,14 @@ export class AppService {
 
   async getAllTweets(offset: number): Promise<ResponseSchema<TweetWithImage[]>> {
     let res: TweetWithImage[] = [];
-    const tweets = await this.knex.table('tweets').orderBy('created_at', 'desc')
-      // .limit(30)
+    // const tweets = await this.knex.raw(`SELECT 
+    // id,tweet_id,user_id,text,likes,retweets,created_at::timestamp 
+    // FROM tweets 
+    // ORDER BY created_at DESC
+    // LIMIT ${30} OFFSET ${offset}`)
+    const tweets = await this.knex.table('tweets')
+      .orderBy('created_at', 'desc')
+      .limit(30)
       .offset(offset); //TODO
     for (const tweet of tweets) {
       const users = await this.knex.table('users').where('user_id', tweet.user_id);
@@ -91,7 +97,7 @@ export class AppService {
           text: tweet.text,
           likes: tweet.likes,
           retweets: tweet.retweets,
-          created_at: tweet.created_at,
+          created_at: new Date(tweet.created_at).toTimeString(),
           image_url: users[0]?.image_url
         });
       }
