@@ -1,19 +1,37 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import { TwitterService } from './twitter.service';
+import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { keyword, ResponseSchema, Token, TopUser, Tweet, TweetWithImage, User } from './dtos';
+import { CRAWLER_CMD, MICROSERVICE_TOKEN } from '../constants';
 
 
 @Injectable()
 export class AppService {
-  constructor(@InjectModel()
-  private readonly knex: Knex,
+  constructor(
+    @InjectModel() private readonly knex: Knex,
+    @Inject(MICROSERVICE_TOKEN.CRAWLER) private client: ClientProxy,
     private twitterService: TwitterService,
   ) { }
 
+  async onApplicationBootstrap() {
+    await this.client.connect();
+  }
+
   getHello(): string {
     return 'Hello World!';
+  }
+
+  async chapar<TReq, TRes>(cmd: string, payload: TReq): Promise<TRes> {
+    return this.client.send(cmd, payload).toPromise();
+  }
+
+  async restartStream() {
+    let response = await this.chapar<any, ReadableStream<any>>(CRAWLER_CMD.RESTART, {})
+      .then((res) => {
+        return res;
+      });
   }
 
   async getTweetById(id: string): Promise<ResponseSchema<Tweet>> {

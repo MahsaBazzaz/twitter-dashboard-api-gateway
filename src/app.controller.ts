@@ -66,14 +66,14 @@ export class AppController {
   @Post("addUser")
   async addUser(@Body('username') username: string): Promise<ResponseSchema<User>> {
     let res = await this.appService.addUser(username);
-    // this.crawlerService.restartStream();
+    this.appService.restartStream();
     return res;
   }
 
   @Post("removeUser")
   removeUser(@Body('username') username: string): Promise<ResponseSchema<any>> {
     let res = this.appService.removeUser(username);
-    // this.crawlerService.restartStream();
+    this.appService.restartStream();
     return res;
   }
 
@@ -100,14 +100,14 @@ export class AppController {
   @Post("addKeyword")
   async addKeyword(@Body('keyword') keyword: string): Promise<ResponseSchema<keyword>> {
     let res = await this.appService.addKeyword(keyword);
-    // this.crawlerService.restartStream();
+    this.appService.restartStream();
     return res;
   }
 
   @Post("removeKeyword")
   async removeKeyword(@Body('keyword') keyword: string): Promise<ResponseSchema<any>> {
     let res = await this.appService.removeKeyword(keyword);
-    // this.crawlerService.restartStream();
+    this.appService.restartStream();
     return res;
   }
 

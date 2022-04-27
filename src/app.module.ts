@@ -7,6 +7,8 @@ import { HttpModule } from '@nestjs/axios';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ReportService } from './report.service';
 import { TwitterService } from './twitter.service';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { MICROSERVICE_TOKEN } from '../constants';
 require('dotenv').config({ path: '../.env' });
 
 @Module({
@@ -33,7 +35,10 @@ require('dotenv').config({ path: '../.env' });
       isGlobal: true
     }),
     HttpModule,
-    ScheduleModule.forRoot()
+    ScheduleModule.forRoot(),
+    ClientsModule.register([
+      { name: MICROSERVICE_TOKEN.CRAWLER, transport: Transport.NATS },
+    ]),
   ],
   controllers: [AppController],
   providers: [
