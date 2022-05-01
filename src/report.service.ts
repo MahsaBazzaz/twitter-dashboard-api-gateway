@@ -88,4 +88,65 @@ export class ReportService {
       }
     }
   }
+  async getVerifications(): Promise<ResponseSchema<{ name: string, y: number }[]>> {
+    const verified = await this.knex.table('users').where('verified', true).count('*');
+    const total = await this.knex.table('users').count('*');
+    let totalNum = parseInt(total[0].count);
+    let verifiedNum = parseInt(verified[0].count);
+    let unverifiedNum = totalNum - verifiedNum;
+    return {
+      ok: {
+        data: [{ name: 'verified', y: (verifiedNum / totalNum) }, { name: 'unverified', y: (unverifiedNum / totalNum) }]
+      }
+    }
+  }
+
+  async getFollowing(): Promise<ResponseSchema<number>> {
+    const res = await this.knex.table('users').avg('following_count')
+      .then(result => {
+        return { ok: { data: parseInt(result[0].avg) } }
+      })
+      .catch(err => {
+        return { err: { message: err } }
+      });
+    return res;
+  }
+
+  async getFollowers(): Promise<ResponseSchema<number>> {
+    const res = await this.knex.table('users').avg('followers_count')
+      .then(result => {
+        return { ok: { data: parseInt(result[0].avg) } }
+      })
+      .catch(err => {
+        return { err: { message: err } }
+      });
+    return res;
+  }
+
+  async tweetsCount(): Promise<ResponseSchema<number>> {
+    const res = await this.knex.raw(`
+    Select avg(tweet_counts_of_each_user) AS tweet_avg
+    from  (Select count(*) as tweet_counts_of_each_user, user_id
+          from tweets
+          group by user_id) AS x`)
+      .then(result => {
+        return { ok: { data: parseInt(result.rows[0].tweet_avg) } }
+      })
+      .catch(err => {
+        return { err: { message: err } }
+      });
+    return res;
+  }
+
+  async yearsCount(): Promise<ResponseSchema<number>> {
+    const res = await this.knex.raw(`Select avg(difference)
+    from  (Select (CURRENT_DATE - to_date(created_at,'YYYY-MM-DDTHH:MI:SS.000Z')) as difference from users) AS x`)
+      .then(result => {
+        return { ok: { data: parseInt(result.rows[0].avg) } }
+      })
+      .catch(err => {
+        return { err: { message: err } }
+      });
+    return res;
+  }
 }

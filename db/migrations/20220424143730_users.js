@@ -6,7 +6,7 @@ exports.up = function(knex) {
     return knex.schema
         .createTable('users', function(table) {
             table.increments('id');
-            table.string('user_id').notNullable();
+            table.string('user_id').notNullable().unique();
             table.string('username', 255).notNullable();
             table.text('image_url', 255).nullable();
             table.string('name').nullable();

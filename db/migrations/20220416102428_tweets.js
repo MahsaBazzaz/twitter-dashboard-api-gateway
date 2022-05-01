@@ -9,7 +9,7 @@ exports.up = function(knex) {
             table.text('text', 'longtext').notNullable();
             table.string('username', 255).notNullable();
             table.timestamp('created_at').notNullable();
-            table.bigInteger('user_id').notNullable();
+            table.string('user_id').notNullable();
             table.string('tweet_id').notNullable();
             table.integer('likes').notNullable();
             table.integer('retweets').notNullable();

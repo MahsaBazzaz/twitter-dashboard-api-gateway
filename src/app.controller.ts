@@ -149,6 +149,31 @@ export class AppController {
   getMostFrequestWords(): Promise<ResponseSchema<Token[]>> {
     return this.reportService.getMostFrequestWords();
   }
+
+  @Get("getVerificationStatus")
+  getVerifications(): Promise<ResponseSchema<{ name: string, y: number }[]>> {
+    return this.reportService.getVerifications();
+  }
+
+  @Get("FollowingsCount")
+  getFollowing(): Promise<ResponseSchema<number>> {
+    return this.reportService.getFollowing();
+  }
+
+  @Get("FollowersCount")
+  getFollowers(): Promise<ResponseSchema<number>> {
+    return this.reportService.getFollowers();
+  }
+
+  @Get("tweetsCount")
+  tweetsCount(): Promise<ResponseSchema<number>> {
+    return this.reportService.tweetsCount();
+  }
+
+  @Get("yearsCount")
+  yearsCount(): Promise<ResponseSchema<number>> {
+    return this.reportService.yearsCount();
+  }
   //#endregion
 
 }
