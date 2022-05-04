@@ -71,17 +71,32 @@ export class ReportService {
     return { ok: { data: response.slice(0, 10) } };
   }
 
-  async getTweetsTimeSeries(): Promise<ResponseSchema<{ count: number, hhour: number }[]>> {
-    const data = await this.knex.raw("SELECT COUNT(*), extract(hour from created_at) as hhour FROM tweets WHERE created_at >= current_date at time zone 'UTC' - interval '7 days' GROUP BY hhour ORDER BY hhour");
-    return {
-      ok: {
-        data: data.rows
-      }
-    }
+  async getTweetsTimeSeries(): Promise<ResponseSchema<{ y: number, name: number }[]>> {
+    let response: ResponseSchema<{ y: number, name: number }[]>;
+    let arr: { y: number, name: number }[] = [];
+    await this.knex.raw("SELECT COUNT(*), extract(hour from created_at) as hhour FROM tweets WHERE created_at >= current_date at time zone 'UTC' - interval '7 days' GROUP BY hhour ORDER BY hhour")
+      .then(result => {
+        for (const data of result.rows) {
+          arr.push({name : data.hhour, y : data.count});
+        }
+        response = {
+          ok: {
+            data: arr
+          }
+        }
+      })
+      .catch(err => {
+        response = {
+          err: {
+            message: err
+          }
+        }
+      })
+    return response;
   }
 
   async getMostFrequestWords(): Promise<ResponseSchema<Token[]>> {
-    const tokens = await this.knex.table('tokens').orderBy('count', 'desc').limit(50);
+    const tokens = await this.knex.table('tokens').orderBy('count', 'desc').limit(30);
     return {
       ok: {
         data: tokens

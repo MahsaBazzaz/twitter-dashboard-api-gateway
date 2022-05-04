@@ -141,7 +141,7 @@ export class AppController {
   }
 
   @Get("getTweetsTimeSeries")
-  getTweetsTimeSeries(): Promise<ResponseSchema<{ count: number; hhour: number; }[]>> {
+  getTweetsTimeSeries(): Promise<ResponseSchema<{ y: number, name: number }[]>> {
     return this.reportService.getTweetsTimeSeries();
   }
 
