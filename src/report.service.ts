@@ -157,7 +157,7 @@ export class ReportService {
     const res = await this.knex.raw(`Select avg(difference)
     from  (Select (CURRENT_DATE - to_date(created_at,'YYYY-MM-DDTHH:MI:SS.000Z')) as difference from users) AS x`)
       .then(result => {
-        return { ok: { data: parseInt(result.rows[0].avg) } }
+        return { ok: { data: Math.floor(result.rows[0].avg / 365) } }
       })
       .catch(err => {
         return { err: { message: err } }
