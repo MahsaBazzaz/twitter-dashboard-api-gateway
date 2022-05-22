@@ -14,6 +14,7 @@ exports.up = function(knex) {
             table.integer('likes').notNullable();
             table.integer('retweets').notNullable();
             table.json('query').nullable();
+            table.string('hashtags').nullable();
         })
 };
 
