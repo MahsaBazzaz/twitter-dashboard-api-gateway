@@ -164,4 +164,18 @@ export class ReportService {
       });
     return res;
   }
+
+  async graphData(): Promise<ResponseSchema<string[]>> {
+    const res = await this.knex.raw(`
+    SELECT user_id, owner_id, count (*) as weight
+    FROM retweets
+    GROUP BY user_id,owner_id`)
+      .then(result => {
+        return { ok: { data: result.rows } }
+      })
+      .catch(err => {
+        return { err: { message: err } }
+      });
+    return res;
+  }
 }

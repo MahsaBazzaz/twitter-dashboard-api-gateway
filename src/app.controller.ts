@@ -174,6 +174,11 @@ export class AppController {
   yearsCount(): Promise<ResponseSchema<number>> {
     return this.reportService.yearsCount();
   }
+
+  @Get("graphData")
+  graphData(): Promise<ResponseSchema<string[]>> {
+    return this.reportService.graphData();
+  }
   //#endregion
 
 }
