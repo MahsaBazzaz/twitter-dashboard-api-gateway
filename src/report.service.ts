@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectModel } from 'nest-knexjs';
 import { HttpService } from '@nestjs/axios';
-import { keyword, ResponseSchema, Token, TopUser, Tweet, TweetWithImage } from './dtos';
+import { graphDto, keyword, ResponseSchema, Token, TopUser, Tweet, TweetWithImage } from './dtos';
 
 @Injectable()
 export class ReportService {
@@ -165,11 +165,15 @@ export class ReportService {
     return res;
   }
 
-  async graphData(): Promise<ResponseSchema<string[]>> {
+  async graphData(): Promise<ResponseSchema<graphDto[]>> {
     const res = await this.knex.raw(`
-    SELECT user_id, owner_id, count (*) as weight
-    FROM retweets
-    GROUP BY user_id,owner_id`)
+      SELECT user_name, owner_name, count (*) as weight
+      FROM retweets m
+      WHERE EXISTS
+      (SELECT 1
+      FROM users p
+      WHERE p.user_id = m.user_id)
+      GROUP BY user_name,owner_name`)
       .then(result => {
         return { ok: { data: result.rows } }
       })

@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { TwitterService } from './twitter.service';
 import { ReportService } from './report.service';
-import { keyword, ResponseSchema, Token, Tweet, TweetWithImage, User } from './dtos';
+import { graphDto, keyword, ResponseSchema, Token, Tweet, TweetWithImage, User } from './dtos';
 
 @Controller()
 export class AppController {
@@ -176,7 +176,7 @@ export class AppController {
   }
 
   @Get("graphData")
-  graphData(): Promise<ResponseSchema<string[]>> {
+  graphData(): Promise<ResponseSchema<graphDto[]>> {
     return this.reportService.graphData();
   }
   //#endregion

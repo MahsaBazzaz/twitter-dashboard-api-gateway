@@ -9,6 +9,8 @@ exports.up = function(knex) {
             table.string('user_id').notNullable();
             table.string('owner_id').notNullable();
             table.string('tweet_id').nullable();
+            table.string('user_name').nullable();
+            table.string('owner_name').nullable();
         })
 };
 

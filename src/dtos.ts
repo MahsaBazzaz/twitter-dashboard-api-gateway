@@ -90,3 +90,9 @@ export interface TopUser {
     username: string,
     image_url: string
 }
+
+export interface graphDto {
+    username: string,
+    ownername: string,
+    weight: string
+}
