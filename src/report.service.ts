@@ -205,8 +205,9 @@ export class ReportService {
       .then(result => {
         const d = new Date();
         let hour = d.getHours();
-        if (result.rows[hour].now - result.rows[hour].prev / result.rows[hour].now > 0.5)
-          return { ok: { data: result.rows[hour].now - result.rows[hour].prev / result.rows[hour].now * 100 } }
+        if (result.rows[hour].now != null && result.rows[hour].prev != null)
+          if (result.rows[hour].now - result.rows[hour].prev / result.rows[hour].now > 0.5)
+            return { ok: { data: result.rows[hour].now - result.rows[hour].prev / result.rows[hour].now * 100 } }
       })
       .catch(err => {
         return { err: { message: err } }
