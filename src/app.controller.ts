@@ -179,6 +179,12 @@ export class AppController {
   graphData(): Promise<ResponseSchema<graphDto[]>> {
     return this.reportService.graphData();
   }
+
+  @Get("getRate")
+  getRate(): Promise<ResponseSchema<{ status: boolean, rate: number }>> {
+    return this.reportService.controlGrowth();
+  }
+
   //#endregion
 
 }
