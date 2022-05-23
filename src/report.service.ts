@@ -77,7 +77,7 @@ export class ReportService {
     await this.knex.raw("SELECT COUNT(*), extract(hour from created_at) as hhour FROM tweets WHERE created_at >= current_date at time zone 'UTC' - interval '7 days' GROUP BY hhour ORDER BY hhour")
       .then(result => {
         for (const data of result.rows) {
-          arr.push({name : data.hhour, y : data.count});
+          arr.push({ name: data.hhour, y: data.count });
         }
         response = {
           ok: {
