@@ -70,6 +70,23 @@ export class AppService {
     }
   }
 
+  async getTweetsCount(): Promise<ResponseSchema<number>> {
+    const tweets = await this.knex.table('tweets')
+    if (tweets) {
+      return {
+        ok: {
+          data: tweets.length
+        }
+      }
+    }
+    else {
+      return {
+        err: {
+          message: 'db error'
+        }
+      }
+    }
+  }
   async getAllTweets(limit: number, offset: number): Promise<ResponseSchema<TweetWithImage[]>> {
     let res: TweetWithImage[] = [];
     const tweets = await this.knex.table('tweets')

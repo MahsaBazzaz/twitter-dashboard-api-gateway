@@ -28,6 +28,11 @@ export class AppController {
     return this.appService.getTweetsByUsername(username);
   }
 
+  @Get("getTweetsCount")
+  getTweetsCount(): Promise<ResponseSchema<number>> {
+    return this.appService.getTweetsCount();
+  }
+
   @Post("getAllTweets")
   getAllTweets(@Body('offset') offset: number, @Body('size') size: number): Promise<ResponseSchema<Tweet[]>> {
     return this.appService.getAllTweets(size, offset);
