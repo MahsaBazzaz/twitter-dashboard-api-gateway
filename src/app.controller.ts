@@ -186,8 +186,8 @@ export class AppController {
   }
 
   @Get("getRate")
-  getRate(): Promise<ResponseSchema<{ status: boolean, rate: number }>> {
-    return this.reportService.controlGrowth();
+  getRate(): Promise<ResponseSchema<any>> {
+    return this.reportService.getGrowthRate(1);
   }
 
   //#endregion

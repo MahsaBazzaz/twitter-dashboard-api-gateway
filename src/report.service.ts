@@ -183,35 +183,33 @@ export class ReportService {
     return res;
   }
 
-  async controlGrowth(): Promise<ResponseSchema<{ status: boolean, rate: number }>> {
-    let res = await this.getGrowthRate(1);
-    if (res.ok.data > 50) {
-      return { ok: { data: { status: true, rate: res.ok.data } } };
-    }
-    return { ok: { data: { status: false, rate: res.ok.data } } };
-
-  }
-
-  async getGrowthRate(interval: number): Promise<ResponseSchema<number>> {
-    const res = await this.knex.raw(`WITH cte AS (
+  async getGrowthRate(interval: number): Promise<ResponseSchema<{ status: boolean, rate: number }>> {
+    let result = [];
+    await this.knex.raw(`WITH cte AS (
       SELECT DISTINCT
       EXTRACT(hour  FROM created_at) AS _hour
       ,count(*) OVER (PARTITION BY EXTRACT(hour  FROM created_at)) AS _count
       FROM tweets
       WHERE created_at >= current_date at time zone 'UTC' - interval '1 day'	
     )
-    SELECT _count as now , LAG (_count) OVER (ORDER BY _hour ASC)  as prev
+    SELECT _count as now , LAG (_count,0) OVER (ORDER BY _hour ASC)  as prev
     FROM  cte`)
-      .then(result => {
-        const d = new Date();
-        let hour = d.getHours();
-        if (result.rows[hour].now != null && result.rows[hour].prev != null)
-          if (result.rows[hour].now - result.rows[hour].prev / result.rows[hour].now > 0.5)
-            return { ok: { data: result.rows[hour].now - result.rows[hour].prev / result.rows[hour].now * 100 } }
+      .then(resu => {
+        result = resu.rows;
       })
       .catch(err => {
         return { err: { message: err } }
       });
-    return res;
+    const d = new Date();
+    let hour = d.getHours();
+    if (result[hour].now != null && result[hour].prev != null) {
+      if (result[hour].now > result[hour].prev)
+        return { ok: { data: { status: true, rate: result[hour].now } } }
+      else
+        return { ok: { data: { status: false, rate: result[hour].now } } }
+    }
+    else {
+      return { err: { message: 'null' } }
+    }
   }
 }
