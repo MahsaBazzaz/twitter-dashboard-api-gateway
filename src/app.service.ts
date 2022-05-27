@@ -87,12 +87,12 @@ export class AppService {
       }
     }
   }
-  async getAllTweets(limit: number, offset: number): Promise<ResponseSchema<TweetWithImage[]>> {
+  async getAllTweets(size: number, offset: number): Promise<ResponseSchema<TweetWithImage[]>> {
     let res: TweetWithImage[] = [];
     const tweets = await this.knex.table('tweets')
       .orderBy('created_at', 'desc')
-      .limit(limit)
-      .offset(offset); //TODO
+      .limit(size)
+      .offset(size * (offset+1));
     for (const tweet of tweets) {
       const users = await this.knex.table('users').where('user_id', tweet.user_id);
       if (users.length > 0) {
