@@ -202,7 +202,7 @@ export class ReportService {
       });
     const d = new Date();
     let hour = d.getHours();
-    if (result[hour].now != null && result[hour].prev != null) {
+    if (result[hour] != null && result[hour].now != null && result[hour].prev != null) {
       if (result[hour].now > result[hour].prev)
         return { ok: { data: { status: true, rate: result[hour].now } } }
       else
