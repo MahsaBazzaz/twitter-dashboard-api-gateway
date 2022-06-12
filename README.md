@@ -17,10 +17,29 @@ $ knex migrate:latest
 ```bash
 $ knex seed:run
 ```
+5. set up a .env file containing Twitter Developer Account API keys and database password in the following format:
+```bash
+consumer_key = ""
+consumer_secret = ""
+Access_Token = ""
+Access_Token_Secret = ""
+bearer_token = ""
+API_Key = ""
+API_Key_Secret = ""
+host = "localhost"
+port = ""
+database = "twitter"
+user = "postgres"
+password = ""
+```
 
 ## Running the app
 to run the app:
 ```bash
 $ npm run start
+```
+=> if encountered with webpack error run:
+```bash
+$ npm link webpack
 ```
 
