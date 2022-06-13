@@ -91,8 +91,8 @@ export class AppService {
     let res: TweetWithImage[] = [];
     const tweets = await this.knex.table('tweets')
       .orderBy('created_at', 'desc')
-      .limit(size)
-      .offset(size * (offset+1));
+      .limit(size * (offset+1))
+      .offset(offset+1);
     for (const tweet of tweets) {
       const users = await this.knex.table('users').where('user_id', tweet.user_id);
       if (users.length > 0) {
